@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getSevenOfTheDay } from "./../getWord";
-import LetterDisplay from "./LetterDisplay";
+import GuessForm from "./GuessForm";
+import AnagramDisplay from "./AnagramDisplay";
 
 function Sevens() {
   const [solved, setSolved] = useState(false);
-  const [guess, setGuess] = useState("");
-  const [numGuesses, setGuesses] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+
+  const [guessArray, setGuessArray] = useState([]);
 
   const [answer, setAnswer] = useState(null);
 
   if (!answer) {
-    setAnswer(getSevenOfTheDay());
+    const response = getSevenOfTheDay();
+    setAnswer(response);
+    // Initialize empty array
+    setGuessArray(new Array(response.word.length).fill(""));
 
     // Return a laoding spinner while answer is being set
     return (
@@ -20,21 +25,25 @@ function Sevens() {
     );
   }
 
-  function handleChange(e) {
-    let input = e.target.value;
-    const pattern = /^[a-zA-Z]*$/;
-    if (!input.match(pattern)) {
+  // Update the user's guess with given inputs
+  function updateGuessArray(value, index) {
+    // Null check to make sure we don't needlessly update
+    if (value === "" && guessArray.join("").length === 0) {
       return;
     }
-    setGuess(input.toUpperCase());
+    // Create new array and update it
+    let newGuess = [...guessArray];
+    newGuess[index] = value;
+    setGuessArray(newGuess);
   }
 
   // Handler for submitting a guess with the Enter key
   function handleSubmit(e) {
     e.preventDefault();
-    setGuesses((prev) => prev + 1);
+    // Increment guess attempt count
+    setAttempts((prev) => prev + 1);
 
-    if (guess === answer.word) {
+    if (guessArray.join("") === answer.word) {
       setSolved(true);
 
       // Mark the given asnwer's index as completed
@@ -54,39 +63,30 @@ function Sevens() {
   return (
     <div className='container text-center'>
       <div className='row g-5'>
-        <h1>Anagram of the Day</h1>
-        <h2>Number of attempts: {numGuesses}</h2>
+        <h1 className='display-1'>Anagram of the Day</h1>
       </div>
 
       <div className='row g-5'>
-        <LetterDisplay
-          size={answer.word.length}
-          word={answer.word.split("").sort().join("")}
-          readOnly
-        />
+        <AnagramDisplay word={answer.word.split("").sort().join("")} />
       </div>
 
       <div className='row g-5'>
-        <LetterDisplay size={answer.word.length} word={guess} solved={solved} />
+        {solved ? (
+          <AnagramDisplay word={answer.word} solved />
+        ) : (
+          <GuessForm
+            size={answer.word.length}
+            word={answer.word}
+            solved={solved}
+            updateGuessArray={updateGuessArray}
+            handleSubmit={handleSubmit}
+            guessArray={guessArray}
+          />
+        )}
       </div>
-
-      {!solved && (
-        <div className='row g-5'>
-          <div className='container'>
-            <form className='form' onSubmit={handleSubmit}>
-              <div className='form-group'>
-                <input
-                  type='text'
-                  className='form-control'
-                  onChange={(e) => handleChange(e)}
-                  value={guess}
-                  maxLength={7}
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <div className='row g-5'>
+        <small className='text-muted'>Number of attempts: {attempts}</small>
+      </div>
     </div>
   );
 }
