@@ -1,12 +1,13 @@
+import { getSevensList } from "../wordUtils";
 function InfoModal() {
-  const wordList = localStorage.getItem("sevensList");
+  const wordList = getSevensList();
   const completedList = localStorage.getItem("completedSevens");
 
   return (
     <div
       className='modal fade'
       id='infoModal'
-      tabindex='-1'
+      tabIndex='-1'
       aria-labelledby='infoModal'
       aria-hidden='true'
     >
@@ -24,11 +25,11 @@ function InfoModal() {
             ></button>
           </div>
           <div className='modal-body'>
-            <p>{`Number of words: ${
-              wordList ? JSON.parse(wordList).length : "NaN"
+            <p>{`Number of 7-letter words: ${
+              wordList ? wordList.length : "0"
             }`}</p>
             <p>{`Number completed: ${
-              completedList ? JSON.parse(completedList).length : "NaN"
+              completedList ? JSON.parse(completedList).length : "0"
             }`}</p>
           </div>
           <div className='modal-footer'>

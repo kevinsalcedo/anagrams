@@ -1,6 +1,7 @@
+import { useState } from "react";
+
 function GuessForm({
   solved = false,
-  readOnly = false,
   updateGuessArray,
   handleSubmit,
   guessArray = [],
@@ -43,10 +44,23 @@ function GuessForm({
       updateGuessArray("", alteredIndex);
     }
 
+    // Handle form submission
     const isSubmit = e.key === "Enter";
     if (isSubmit) {
       handleSubmit(e);
     }
+  }
+
+  // Only focus on the latest letter or blank
+  function handleClick() {
+    for (let i = 0; i < guessArray.length; i++) {
+      if (guessArray[i] === "") {
+        document.getElementById("game-tile-" + i).focus();
+        return;
+      }
+    }
+
+    document.getElementById("game-tile-" + (guessArray.length - 1)).focus();
   }
 
   return (
@@ -58,13 +72,14 @@ function GuessForm({
               key={index}
               id={`game-tile-${index}`}
               className={`border letter-tile${
-                value && "-filled "
+                value && " letter-tile-filled "
               } align-items-center justify-content-center ${
                 solved && "bg-success bg-opacity-75 text-light"
               }`}
               maxLength={1}
               onChange={(e) => handleChange(e, index)}
               onKeyDown={(e) => updateLetterFocus(e, index)}
+              onClick={() => handleClick()}
               value={guessArray[index]}
             />
           ))}

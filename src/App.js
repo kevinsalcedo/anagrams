@@ -5,13 +5,15 @@ import Sevens from "./components/Sevens";
 
 function App() {
   return (
-    <div className='container-fluid'>
+    <>
       <MainNav />
-      <Routes>
-        <Route path='/' element={<Sevens />} />
-      </Routes>
-      <InfoModal />
-    </div>
+      <div className='container-fluid'>
+        <Routes>
+          <Route path='/' element={<Sevens />} />
+        </Routes>
+        <InfoModal />
+      </div>
+    </>
   );
 }
 

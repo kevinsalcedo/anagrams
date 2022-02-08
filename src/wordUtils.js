@@ -1,27 +1,15 @@
-import wordFiles from "./assets/common_sevens.txt";
+import { common_sevens } from "./assets/common_sevens.js";
 
 // Load the seven-letter anagram list into localStorage if not present
-const getSevensList = () => {
-  if (!localStorage.getItem("sevensList")) {
-    fetch(wordFiles)
-      .then((r) => r.text())
-      .then((text) => {
-        try {
-          const list = JSON.stringify(text.split("\n"));
-          localStorage.setItem("sevensList", list);
-        } catch (err) {
-          console.log("Error while loading list.");
-        }
-      });
-  }
+export const getSevensList = () => {
+  return common_sevens;
 };
 
 export function getSevenOfTheDay() {
   // Populate list of 7-letter anagrams
-  getSevensList();
+  const list = getSevensList();
 
   // Get existing list of 7-letter anagrams
-  const list = JSON.parse(localStorage.getItem("sevensList"));
   if (!list) {
     return;
   }
@@ -41,4 +29,18 @@ export function getSevenOfTheDay() {
     index: idx,
     word: list[idx],
   };
+}
+
+export function showAlert(type, message) {
+  const alertDiv = document.getElementById("liveAlert");
+  alertDiv.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML =
+    '<div class="alert alert-' +
+    type +
+    ' alert-dismissible" role="alert">' +
+    message +
+    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+  alertDiv.append(wrapper);
 }
