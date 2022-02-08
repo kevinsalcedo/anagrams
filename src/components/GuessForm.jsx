@@ -1,9 +1,17 @@
+import { useState, useEffect } from "react";
+
 function GuessForm({
   solved = false,
   updateGuessArray,
   handleSubmit,
   guessArray = [],
 }) {
+  // Autofocus the files when the page is laoded
+  useEffect(() => {
+    let firstTile = document.getElementById("game-tile-0");
+    firstTile.focus();
+  }, []);
+
   function handleChange(e, index) {
     e.preventDefault();
     let input = e.target.value;
@@ -65,27 +73,26 @@ function GuessForm({
 
   return (
     <div className='container'>
-      <form className='form' onSubmit={(e) => handleSubmit(e)}>
-        <div className='row justify-content-center'>
-          {guessArray.map((value, index) => (
-            <input
-              key={index}
-              id={`game-tile-${index}`}
-              className={`border letter-tile${
-                value && " letter-tile-filled "
-              } align-items-center justify-content-center ${
-                solved && "bg-success bg-opacity-75 text-light"
-              }`}
-              maxLength={1}
-              onChange={(e) => handleChange(e, index)}
-              onKeyUp={(e) => updateLetterFocus(e, index)}
-              onClick={() => handleClick()}
-              value={guessArray[index]}
-              autoComplete='off'
-            />
-          ))}
-        </div>
-      </form>
+      <div className='row justify-content-center'>
+        {guessArray.map((value, index) => (
+          <input
+            key={index}
+            id={`game-tile-${index}`}
+            type='text'
+            className={`border letter-tile${
+              value && " letter-tile-filled "
+            } align-items-center justify-content-center ${
+              solved && "bg-success bg-opacity-75 text-light"
+            }`}
+            maxLength={1}
+            onChange={(e) => handleChange(e, index)}
+            onKeyUp={(e) => updateLetterFocus(e, index)}
+            onClick={() => handleClick()}
+            value={guessArray[index]}
+            autoComplete='off'
+          />
+        ))}
+      </div>
     </div>
   );
 }
