@@ -37,9 +37,9 @@ export function showAlert(type, message) {
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML =
-    '<div class="alert alert-' +
+    '<div id="the-alert" class="alert alert-' +
     type +
-    ' alert-dismissible" role="alert">' +
+    ' alert-dismissible fade show vw-100" role="alert" style="position: absolute">' +
     message +
     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
   alertDiv.append(wrapper);

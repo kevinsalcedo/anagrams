@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { getSevenOfTheDay, showAlert } from "../wordUtils";
-import GuessForm from "./GuessForm";
-import AnagramDisplay from "./AnagramDisplay";
+import {
+  GUESS_SUCCESS,
+  GUESS_INCOMPLETE,
+  GUESS_INCORRECT,
+  GUESS_INVALID,
+} from "../assets/alertMessages";
+import GuessForm from "../components/GuessForm";
+import AnagramDisplay from "../components/AnagramDisplay";
+import SoftKeyboard from "../components/SoftKeyboard";
 
 function Sevens() {
   const [solved, setSolved] = useState(false);
@@ -10,24 +17,23 @@ function Sevens() {
   const [answer, setAnswer] = useState(null);
 
   if (!answer) {
-    resetWord();
-    // Return a loading spinner while answer is being set
-    return (
-      <div className='spinner-border' role='status'>
-        <span className='visually-hidden'>Loading...</span>
-      </div>
-    );
+    resetWord(true);
+
+    return <div>Loading..</div>;
   }
 
   // Reset attempts & guess data, and get new uncompleted word
-  function resetWord() {
-    const response = getSevenOfTheDay();
-    if (response) {
+  function resetWord(useNewWord) {
+    if (useNewWord) {
       setSolved(false);
       setAttempts(0);
-      setAnswer(response);
-      // Initialize empty array
-      setGuessArray(new Array(response.word.length).fill(""));
+      setAnswer(getSevenOfTheDay());
+    }
+
+    setGuessArray(new Array(7).fill(""));
+    let firstTile = document.getElementById("game-tile-0");
+    if (firstTile) {
+      firstTile.focus();
     }
   }
 
@@ -48,7 +54,7 @@ function Sevens() {
     e.preventDefault();
     const guess = guessArray.join("");
     if (guess.length !== guessArray.length) {
-      showAlert("warning", "Make sure you fill in the entire word!");
+      showAlert("warning", GUESS_INCOMPLETE);
       return;
     }
     // Increment guess attempt count
@@ -68,31 +74,33 @@ function Sevens() {
         "completedSevens",
         JSON.stringify([...completed, answer.index])
       );
-      showAlert("success", "Well Done!");
+      showAlert("success", GUESS_SUCCESS);
+      return;
+    }
+
+    // Incorrect characters used
+    if (
+      guess.split("").sort().join("") !== answer.word.split("").sort().join("")
+    ) {
+      showAlert("danger", GUESS_INVALID);
+      resetWord(false);
       return;
     }
 
     // Incorrect guess
-    showAlert("danger", "Not Quite! Try again!");
-    setGuessArray(new Array(answer.word.length).fill(""));
-    document.getElementById("game-tile-0").focus();
+    showAlert("danger", GUESS_INCORRECT);
+    resetWord(false);
   }
 
   return (
-    <div className='container text-center'>
-      <div className='row g-5'>
+    <>
+      <div id='titleRow' className='row'>
         <h1 className='display-1'>Anagram of the Day</h1>
       </div>
 
-      <div className='row g-5'>
+      <div id='tilesRow' className='row'>
         <AnagramDisplay word={answer.word.split("").sort().join("")} />
-      </div>
 
-      <div className='row g-5'>
-        <div id='liveAlert'></div>
-      </div>
-
-      <div className='row g-5'>
         {solved ? (
           <AnagramDisplay word={answer.word} solved />
         ) : (
@@ -106,29 +114,34 @@ function Sevens() {
           />
         )}
       </div>
-      <div className='row g-5'>
-        <small className='text-muted'>Number of attempts: {attempts}</small>
-      </div>
-      <div className='row g-5'>
-        <div className='container justify-content-center gx-2'>
-          <button
-            className='btn btn-primary mb-2'
-            style={{ width: "5rem" }}
-            onClick={(e) => handleSubmit(e)}
-            disabled={solved}
-          >
-            Submit
-          </button>
-          <button
-            className='btn btn-secondary mb-2'
-            style={{ width: "5rem" }}
-            onClick={() => resetWord()}
-          >
-            {solved ? "Next" : "Skip"}
-          </button>
+      <div id='buttonRow' className='row'>
+        <div className='container d-flex flex-column align-items-center'>
+          <div className='row '>
+            <button
+              className='btn btn-primary mb-2'
+              style={{ width: "5rem" }}
+              onClick={(e) => handleSubmit(e)}
+              disabled={solved}
+            >
+              Submit
+            </button>
+            <button
+              className='btn btn-secondary mb-2'
+              style={{ width: "5rem" }}
+              onClick={() => resetWord(true)}
+            >
+              {solved ? "Next" : "Skip"}
+            </button>
+          </div>
+        </div>
+        <div className='container align-items-center'>
+          <small className='text-muted'>Number of attempts: {attempts}</small>
         </div>
       </div>
-    </div>
+      <div id='keyboardRow' className='row'>
+        <SoftKeyboard />
+      </div>
+    </>
   );
 }
 
