@@ -1,4 +1,7 @@
 function AnagramDisplay({ word, solved }) {
+  if (!word) {
+    return;
+  }
   return (
     <div className='container'>
       <div className='row justify-content-center'>

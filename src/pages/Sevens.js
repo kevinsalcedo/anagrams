@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getSevenOfTheDay, showAlert } from "../wordUtils";
 import {
   GUESS_SUCCESS,
@@ -6,15 +6,16 @@ import {
   GUESS_INCORRECT,
   GUESS_INVALID,
 } from "../assets/alertMessages";
-import GuessForm from "../components/GuessForm";
 import AnagramDisplay from "../components/AnagramDisplay";
 import SoftKeyboard from "../components/SoftKeyboard";
+import TileDisplay from "../components/TileDisplay";
 
 function Sevens() {
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
-  const [guessArray, setGuessArray] = useState([]);
   const [answer, setAnswer] = useState(null);
+  const [guessString, setGuessString] = useState("");
+  const keyboard = useRef();
 
   if (!answer) {
     resetWord(true);
@@ -30,33 +31,18 @@ function Sevens() {
       setAnswer(getSevenOfTheDay());
     }
 
-    setGuessArray(new Array(7).fill(""));
-    let firstTile = document.getElementById("game-tile-0");
-    if (firstTile) {
-      firstTile.focus();
-    }
-  }
-
-  // Update the user's guess with given inputs
-  function updateGuessArray(value, index) {
-    // Null check to make sure we don't needlessly update
-    if (value === "" && guessArray.join("").length === 0) {
-      return;
-    }
-    // Create new array and update it
-    let newGuess = [...guessArray];
-    newGuess[index] = value;
-    setGuessArray(newGuess);
+    setGuessString("");
   }
 
   // Handler for submitting a guess with the Enter key
-  function handleSubmit(e) {
-    e.preventDefault();
-    const guess = guessArray.join("");
-    if (guess.length !== guessArray.length) {
+  function handleSubmit() {
+    const guess = guessString;
+
+    if (guessString.length !== answer.word.length) {
       showAlert("warning", GUESS_INCOMPLETE);
       return;
     }
+
     // Increment guess attempt count
     setAttempts((prev) => prev + 1);
 
@@ -84,12 +70,21 @@ function Sevens() {
     ) {
       showAlert("danger", GUESS_INVALID);
       resetWord(false);
+      keyboard.current.clearInput();
       return;
     }
 
     // Incorrect guess
     showAlert("danger", GUESS_INCORRECT);
     resetWord(false);
+    keyboard.current.clearInput();
+  }
+
+  // Set the guess based on physical and virtual keyboard input
+  function handleGuess(guess) {
+    if (guess.length <= answer.word.length) {
+      setGuessString(guess);
+    }
   }
 
   return (
@@ -100,19 +95,7 @@ function Sevens() {
 
       <div id='tilesRow' className='row'>
         <AnagramDisplay word={answer.word.split("").sort().join("")} />
-
-        {solved ? (
-          <AnagramDisplay word={answer.word} solved />
-        ) : (
-          <GuessForm
-            size={answer.word.length}
-            word={answer.word}
-            solved={solved}
-            updateGuessArray={updateGuessArray}
-            handleSubmit={handleSubmit}
-            guessArray={guessArray}
-          />
-        )}
+        <TileDisplay size={7} word={guessString} solved={solved} />
       </div>
       <div id='buttonRow' className='row'>
         <div className='container d-flex flex-column align-items-center'>
@@ -120,7 +103,7 @@ function Sevens() {
             <button
               className='btn btn-primary mb-2'
               style={{ width: "5rem" }}
-              onClick={(e) => handleSubmit(e)}
+              onClick={handleSubmit}
               disabled={solved}
             >
               Submit
@@ -139,7 +122,12 @@ function Sevens() {
         </div>
       </div>
       <div id='keyboardRow' className='row'>
-        <SoftKeyboard />
+        <SoftKeyboard
+          keyboard={keyboard}
+          handleInput={handleGuess}
+          handleSubmit={handleSubmit}
+          solved={solved}
+        />
       </div>
     </>
   );
