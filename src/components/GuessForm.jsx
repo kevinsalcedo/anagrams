@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 function GuessForm({
   solved = false,
   updateGuessArray,
@@ -7,6 +5,7 @@ function GuessForm({
   guessArray = [],
 }) {
   function handleChange(e, index) {
+    e.preventDefault();
     let input = e.target.value;
     if (input) {
       const pattern = /^[a-zA-Z]*$/;
@@ -14,29 +13,30 @@ function GuessForm({
         return;
       }
       input = input.toUpperCase();
+      updateGuessArray(input, index);
+
+      // Move focus to next sibling
+      if (index + 1 < guessArray.length) {
+        let alteredIndex = index + 1;
+        let sibling = document.getElementById("game-tile-" + alteredIndex);
+        if (sibling) {
+          sibling.focus();
+        }
+      }
     }
   }
+
   function updateLetterFocus(e, index) {
-    // e.preventDefault();
+    e.preventDefault();
     // debugger;
     const newValue = e.key;
     let alteredIndex = index;
 
-    // Check for user input
-    const pattern = /^[a-zA-Z]$/;
-    if (pattern.test(newValue) && e.target.value === "") {
-      updateGuessArray(newValue.toUpperCase(), index);
-      if (index + 1 < guessArray.length) {
-        alteredIndex = index + 1;
-        let sibling = document.getElementById("game-tile-" + alteredIndex);
-        sibling.focus();
-      }
-    }
-
     // Handle backspacing with edge case inclusion
-    const isBackspace = e.key === "Backspace";
+    const isBackspace = newValue === "Backspace";
     if (isBackspace) {
-      if (!e.target.value && index > 0) {
+      // If current value is blank, then delete the previous value
+      if (index > 0 && !e.target.value) {
         alteredIndex = index - 1;
         let sibling = document.getElementById("game-tile-" + alteredIndex);
         sibling.focus();
@@ -78,9 +78,10 @@ function GuessForm({
               }`}
               maxLength={1}
               onChange={(e) => handleChange(e, index)}
-              onKeyDown={(e) => updateLetterFocus(e, index)}
+              onKeyUp={(e) => updateLetterFocus(e, index)}
               onClick={() => handleClick()}
               value={guessArray[index]}
+              autoComplete='off'
             />
           ))}
         </div>
