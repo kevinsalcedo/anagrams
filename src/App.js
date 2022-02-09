@@ -6,15 +6,14 @@ import Eights from "./pages/Eights";
 
 function App() {
   return (
-    <div className='container-fullwidth overflow-hidden vh-100'>
+    <div className='h-100 d-flex flex-column text-center'>
       <MainNav />
-      <div id='liveAlert'></div>
-      <div className='text-center d-flex flex-column justify-content-evenly h-75'>
+      <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
         <Routes>
           <Route path='/' element={<Sevens />} />
           <Route path='/eights' element={<Eights />} />
         </Routes>
-      </div>
+      </main>
       <InfoModal />
     </div>
   );

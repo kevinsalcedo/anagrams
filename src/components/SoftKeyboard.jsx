@@ -47,7 +47,6 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
 
   // Handler for entering text through virtual keyboard
   function onSoftKeyboardPress(e) {
-    console.log(solved);
     if (solved) {
       return;
     }
@@ -62,7 +61,7 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
   }
 
   return (
-    <div className='container d-flex justify-content-center align-items-center'>
+    <div className='container d-flex justify-content-center align-items-center px-0'>
       <Keyboard
         keyboardRef={(r) => (keyboard.current = r)}
         layout={newLayout}
@@ -73,6 +72,7 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
         onKeyPress={handleKeyPress}
         disableButtonHold
         useMouseEvents
+        autoUseTouchEvents
       />
     </div>
   );

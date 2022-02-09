@@ -9,6 +9,7 @@ import {
 import AnagramDisplay from "../components/AnagramDisplay";
 import SoftKeyboard from "../components/SoftKeyboard";
 import TileDisplay from "../components/TileDisplay";
+import ToastMessage from "../components/ToastMessage";
 
 function Sevens() {
   const [solved, setSolved] = useState(false);
@@ -16,6 +17,10 @@ function Sevens() {
   const [answer, setAnswer] = useState(null);
   const [guessString, setGuessString] = useState("");
   const keyboard = useRef();
+
+  const [visible, setVisible] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [toastType, setToastType] = useState("");
 
   if (!answer) {
     resetWord(true);
@@ -41,7 +46,7 @@ function Sevens() {
     const guess = guessString;
 
     if (guessString.length !== answer.word.length) {
-      showAlert("warning", GUESS_INCOMPLETE);
+      showToast(GUESS_INCOMPLETE, "warning");
       return;
     }
 
@@ -62,7 +67,8 @@ function Sevens() {
         "completedSevens",
         JSON.stringify([...completed, answer.index])
       );
-      showAlert("success", GUESS_SUCCESS);
+
+      showToast(GUESS_SUCCESS, "success");
       return;
     }
 
@@ -70,58 +76,61 @@ function Sevens() {
     if (
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
-      showAlert("danger", GUESS_INVALID);
+      showToast(GUESS_INVALID, "danger");
       resetWord(false);
       return;
     }
 
     // Incorrect guess
-    showAlert("danger", GUESS_INCORRECT);
+    showToast(GUESS_INCORRECT, "danger");
     resetWord(false);
   }
 
   // Set the guess based on physical and virtual keyboard input
   function handleGuess(guess) {
     if (guess.length <= answer.word.length) {
+      setVisible(false);
       setGuessString(guess);
     }
   }
 
+  function showToast(msg, type) {
+    setMsg(msg);
+    setVisible(true);
+    console.log("here");
+    setToastType(type);
+  }
+
   return (
     <>
-      <div id='titleRow' className='row'>
-        <h1 className='display-1'>Anagram of the Day</h1>
-      </div>
-
-      <div id='tilesRow' className='row'>
-        <AnagramDisplay word={answer.word.split("").sort().join("")} />
-        <TileDisplay size={7} word={guessString} solved={solved} />
-      </div>
-      <div id='buttonRow' className='row'>
-        <div className='container d-flex flex-column align-items-center'>
-          <div className='row '>
-            <button
-              className='btn btn-primary mb-2'
-              style={{ width: "5rem" }}
-              onClick={handleSubmit}
-              disabled={solved}
-            >
-              Submit
-            </button>
-            <button
-              className='btn btn-secondary mb-2'
-              style={{ width: "5rem" }}
-              onClick={() => resetWord(true)}
-            >
-              {solved ? "Next" : "Skip"}
-            </button>
+      <ToastMessage
+        visible={visible}
+        setVisible={setVisible}
+        msg={msg}
+        type={toastType}
+      />
+      <div id='contentRow' className='row justify-content-center flex-grow-1'>
+        <div id='titleRow' className='row align-items-center mt-3 mb-3'>
+          <h1 className='display-1'>Anagram of the Day</h1>
+        </div>
+        <div id='tilesRow' className='row px-0 mb-auto gy-2'>
+          <AnagramDisplay word={answer.word.split("").sort().join("")} />
+          <div className='row mx-0 px-0 justify-content-center'>
+            <TileDisplay size={7} word={guessString} solved={solved} />
           </div>
-        </div>
-        <div className='container align-items-center'>
           <small className='text-muted'>Number of attempts: {attempts}</small>
+          {solved && (
+            <button
+              className='btn mx-auto bg-success bg-opacity-75 text-white'
+              onClick={() => resetWord(true)}
+              style={{ width: "5rem" }}
+            >
+              Next
+            </button>
+          )}
         </div>
       </div>
-      <div id='keyboardRow' className='row'>
+      <div id='keyboardRow' className='mt-auto row'>
         <SoftKeyboard
           keyboard={keyboard}
           handleInput={handleGuess}

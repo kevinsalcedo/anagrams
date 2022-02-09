@@ -4,7 +4,7 @@ function GameTile({ value, index, solved }) {
       key={index}
       className={`d-flex border letter-tile ${
         value !== " " ? "letter-tile-filled " : ""
-      } align-items-center justify-content-center ${
+      } align-items-center justify-content-center align-items-center ${
         solved ? "bg-success bg-opacity-75 text-light" : ""
       }`}
     >

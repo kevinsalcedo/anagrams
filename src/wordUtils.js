@@ -33,13 +33,17 @@ export function getSevenOfTheDay() {
 
 export function showAlert(type, message) {
   const alertDiv = document.getElementById("liveAlert");
+
+  if (!alertDiv) {
+    return;
+  }
   alertDiv.innerHTML = "";
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML =
     '<div id="the-alert" class="alert alert-' +
     type +
-    ' alert-dismissible fade show vw-100" role="alert" style="position: absolute">' +
+    ' alert-dismissible fade show" role="alert">' +
     message +
     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
   alertDiv.append(wrapper);
