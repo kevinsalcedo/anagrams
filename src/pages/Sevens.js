@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { getSevenOfTheDay, showAlert } from "../wordUtils";
 import {
   GUESS_SUCCESS,
@@ -76,14 +76,14 @@ function Sevens() {
     if (
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
+      // resetWord(false);
       showToast(GUESS_INVALID, "danger");
-      resetWord(false);
       return;
     }
 
     // Incorrect guess
+    // resetWord(false);
     showToast(GUESS_INCORRECT, "danger");
-    resetWord(false);
   }
 
   // Set the guess based on physical and virtual keyboard input
@@ -97,7 +97,6 @@ function Sevens() {
   function showToast(msg, type) {
     setMsg(msg);
     setVisible(true);
-    console.log("here");
     setToastType(type);
   }
 
