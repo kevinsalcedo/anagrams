@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { getSevenOfTheDay } from "../wordUtils";
+import { getSevenOfTheDay, markCompleted } from "../wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
@@ -23,13 +23,12 @@ function Sevens() {
   const [toastType, setToastType] = useState("");
 
   if (!answer) {
-    resetWord(true);
-
+    resetForm(true);
     return <div>Loading..</div>;
   }
 
   // Reset attempts & guess data, and get new uncompleted word
-  function resetWord(useNewWord) {
+  function resetForm(useNewWord) {
     if (useNewWord) {
       setSolved(false);
       setAttempts(0);
@@ -54,18 +53,7 @@ function Sevens() {
 
     if (guess === answer.word) {
       setSolved(true);
-
-      // Mark the given asnwer's index as completed
-      let completed = localStorage.getItem("completedSevens");
-      if (!completed) {
-        completed = [];
-      } else {
-        completed = JSON.parse(localStorage.getItem("completedSevens"));
-      }
-      localStorage.setItem(
-        "completedSevens",
-        JSON.stringify([...completed, answer.index])
-      );
+      markCompleted("Sevens", answer.index);
 
       toggleToast(true, GUESS_SUCCESS, "success");
       return;
@@ -75,13 +63,13 @@ function Sevens() {
     if (
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
-      // resetWord(false);
+      // resetForm(false);
       toggleToast(true, GUESS_INVALID, "danger");
       return;
     }
 
     // Incorrect guess
-    // resetWord(false);
+    // resetForm(false);
     toggleToast(true, GUESS_INCORRECT, "danger");
   }
 
@@ -121,7 +109,7 @@ function Sevens() {
           {solved && (
             <button
               className='btn mx-auto bg-success bg-opacity-75 text-white'
-              onClick={() => resetWord(true)}
+              onClick={() => resetForm(true)}
               style={{ width: "5rem" }}
             >
               Next

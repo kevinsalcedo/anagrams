@@ -31,20 +31,13 @@ export function getSevenOfTheDay() {
   };
 }
 
-export function showAlert(type, message) {
-  const alertDiv = document.getElementById("liveAlert");
-
-  if (!alertDiv) {
-    return;
+export function markCompleted(listName, answerIndex) {
+  const completedName = listName + "-completed";
+  let list = localStorage.getItem(completedName);
+  if (!list) {
+    list = [];
+  } else {
+    list = JSON.parse(localStorage.getItem(completedName));
   }
-  alertDiv.innerHTML = "";
-
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML =
-    '<div id="the-alert" class="alert alert-' +
-    type +
-    ' alert-dismissible fade show" role="alert">' +
-    message +
-    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
-  alertDiv.append(wrapper);
+  localStorage.setItem(completedName, JSON.stringify([...list, answerIndex]));
 }
