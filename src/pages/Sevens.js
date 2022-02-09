@@ -45,7 +45,7 @@ function Sevens() {
   function handleSubmit() {
     const guess = guessString;
     if (guessString.length !== answer.word.length) {
-      showToast(GUESS_INCOMPLETE, "warning");
+      toggleToast(true, GUESS_INCOMPLETE, "warning");
       return;
     }
 
@@ -67,7 +67,7 @@ function Sevens() {
         JSON.stringify([...completed, answer.index])
       );
 
-      showToast(GUESS_SUCCESS, "success");
+      toggleToast(true, GUESS_SUCCESS, "success");
       return;
     }
 
@@ -76,27 +76,28 @@ function Sevens() {
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
       // resetWord(false);
-      showToast(GUESS_INVALID, "danger");
+      toggleToast(true, GUESS_INVALID, "danger");
       return;
     }
 
     // Incorrect guess
     // resetWord(false);
-    showToast(GUESS_INCORRECT, "danger");
+    toggleToast(true, GUESS_INCORRECT, "danger");
   }
 
   // Set the guess based on physical and virtual keyboard input
   function handleGuess(guess) {
     if (guess.length <= answer.word.length) {
-      setVisible(false);
+      toggleToast(false);
       setGuessString(guess);
     }
   }
 
-  function showToast(msg, type) {
-    setMsg(msg);
-    setVisible(true);
-    setToastType(type);
+  // Let the ToastMessage comoponent know if it should render
+  function toggleToast(show, msg, type) {
+    setVisible(show);
+    setMsg(show ? msg : "");
+    setToastType(show ? type : "");
   }
 
   return (
