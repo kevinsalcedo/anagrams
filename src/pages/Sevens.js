@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { getSevenOfTheDay, showAlert } from "../wordUtils";
+import { useState, useRef } from "react";
+import { getSevenOfTheDay } from "../wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
   GUESS_INCORRECT,
   GUESS_INVALID,
 } from "../assets/alertMessages";
-import AnagramDisplay from "../components/AnagramDisplay";
+import PageTitle from "../components/PageTitle";
 import SoftKeyboard from "../components/SoftKeyboard";
 import TileDisplay from "../components/TileDisplay";
 import ToastMessage from "../components/ToastMessage";
@@ -44,7 +44,6 @@ function Sevens() {
   // Handler for submitting a guess with the Enter key
   function handleSubmit() {
     const guess = guessString;
-
     if (guessString.length !== answer.word.length) {
       showToast(GUESS_INCOMPLETE, "warning");
       return;
@@ -109,14 +108,14 @@ function Sevens() {
         type={toastType}
       />
       <div id='contentRow' className='row justify-content-center flex-grow-1'>
-        <div id='titleRow' className='row align-items-center mt-3 mb-3'>
-          <h1 className='display-1'>Anagram of the Day</h1>
-        </div>
+        <PageTitle title='Anagram of the Day' />
         <div id='tilesRow' className='row px-0 mb-auto gy-2'>
-          <AnagramDisplay word={answer.word.split("").sort().join("")} />
-          <div className='row mx-0 px-0 justify-content-center'>
-            <TileDisplay size={7} word={guessString} solved={solved} />
-          </div>
+          <TileDisplay
+            size={7}
+            word={answer.word.split("").sort().join("")}
+            readOnly
+          />
+          <TileDisplay size={7} word={guessString} solved={solved} />
           <small className='text-muted'>Number of attempts: {attempts}</small>
           {solved && (
             <button
@@ -129,14 +128,12 @@ function Sevens() {
           )}
         </div>
       </div>
-      <div id='keyboardRow' className='mt-auto row'>
-        <SoftKeyboard
-          keyboard={keyboard}
-          handleInput={handleGuess}
-          handleSubmit={handleSubmit}
-          solved={solved}
-        />
-      </div>
+      <SoftKeyboard
+        keyboard={keyboard}
+        handleInput={handleGuess}
+        handleSubmit={handleSubmit}
+        solved={solved}
+      />
     </>
   );
 }

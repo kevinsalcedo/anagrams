@@ -61,19 +61,21 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
   }
 
   return (
-    <div className='container d-flex justify-content-center align-items-center px-0'>
-      <Keyboard
-        keyboardRef={(r) => (keyboard.current = r)}
-        layout={newLayout}
-        layoutName='alpha'
-        display={display}
-        maxLength={7}
-        onChange={onSoftKeyboardPress}
-        onKeyPress={handleKeyPress}
-        disableButtonHold
-        useMouseEvents
-        autoUseTouchEvents
-      />
+    <div id='keyboardRow' className='mt-auto row'>
+      <div className='container d-flex justify-content-center align-items-center px-0'>
+        <Keyboard
+          keyboardRef={(r) => (keyboard.current = r)}
+          layout={newLayout}
+          layoutName='alpha'
+          display={display}
+          maxLength={7}
+          onChange={onSoftKeyboardPress}
+          onKeyPress={handleKeyPress}
+          disableButtonHold
+          useMouseEvents
+          autoUseTouchEvents
+        />
+      </div>
     </div>
   );
 }
