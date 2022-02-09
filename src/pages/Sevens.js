@@ -30,7 +30,9 @@ function Sevens() {
       setAttempts(0);
       setAnswer(getSevenOfTheDay());
     }
-
+    if (keyboard.current) {
+      keyboard.current.clearInput();
+    }
     setGuessString("");
   }
 
@@ -70,14 +72,12 @@ function Sevens() {
     ) {
       showAlert("danger", GUESS_INVALID);
       resetWord(false);
-      keyboard.current.clearInput();
       return;
     }
 
     // Incorrect guess
     showAlert("danger", GUESS_INCORRECT);
     resetWord(false);
-    keyboard.current.clearInput();
   }
 
   // Set the guess based on physical and virtual keyboard input

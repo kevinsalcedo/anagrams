@@ -1,6 +1,6 @@
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-import { useEffect } from "react/cjs/react.development";
+import { useEffect } from "react";
 
 function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
   const newLayout = {
@@ -47,6 +47,7 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
 
   // Handler for entering text through virtual keyboard
   function onSoftKeyboardPress(e) {
+    console.log(solved);
     if (solved) {
       return;
     }
@@ -71,7 +72,6 @@ function SoftKeyboard({ keyboard, handleInput, handleSubmit, solved }) {
         onChange={onSoftKeyboardPress}
         onKeyPress={handleKeyPress}
         disableButtonHold
-        useButtonTag
         useMouseEvents
       />
     </div>
