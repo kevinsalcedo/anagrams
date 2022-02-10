@@ -5,6 +5,12 @@ function InfoModal() {
   const listData = getListData("sevens");
   const [wordsVisible, setWordsVisible] = useState(false);
 
+  let avgAttempts = 0;
+  if (listData && listData.completed.length) {
+    console.log(listData);
+    avgAttempts = listData.attempts / listData.completed.length;
+  }
+
   return (
     <div
       className='modal fade modal-centered'
@@ -31,9 +37,7 @@ function InfoModal() {
               wordList ? wordList.length : "0"
             }`}</p>
             <p>{`Number completed: ${listData.completed.length}`}</p>
-            <p>{`Average attempts per word: ${(
-              listData.attempts / listData.completed.length
-            ).toFixed(2)}`}</p>
+            <p>{`Average attempts per word: ${avgAttempts.toFixed(2)}`}</p>
             {wordsVisible && listData.completed.map((word) => <p>{word}</p>)}
           </div>
 
