@@ -1,9 +1,4 @@
 function Eights() {
-  return (
-    <>
-      <div className='row'>Hello Eight!</div>
-    </>
-  );
+  return <div>Eights!</div>;
 }
-
 export default Eights;

@@ -1,11 +1,13 @@
-import { getSevensList } from "../wordUtils";
+import { useState } from "react";
+import { getWordList, getListData } from "../wordUtils";
 function InfoModal() {
-  const wordList = getSevensList();
-  const completedList = localStorage.getItem("completedSevens");
+  const wordList = getWordList("sevens");
+  const listData = getListData("sevens");
+  const [wordsVisible, setWordsVisible] = useState(false);
 
   return (
     <div
-      className='modal fade'
+      className='modal fade modal-centered'
       id='infoModal'
       tabIndex='-1'
       aria-labelledby='infoModal'
@@ -28,11 +30,21 @@ function InfoModal() {
             <p>{`Number of 7-letter words: ${
               wordList ? wordList.length : "0"
             }`}</p>
-            <p>{`Number completed: ${
-              completedList ? JSON.parse(completedList).length : "0"
-            }`}</p>
+            <p>{`Number completed: ${listData.completed.length}`}</p>
+            <p>{`Average attempts per word: ${(
+              listData.attempts / listData.completed.length
+            ).toFixed(2)}`}</p>
+            {wordsVisible && listData.completed.map((word) => <p>{word}</p>)}
           </div>
+
           <div className='modal-footer'>
+            <button
+              type='button'
+              className='btn btn-primary'
+              onClick={() => setWordsVisible((state) => !state)}
+            >
+              {wordsVisible ? "Hide" : "Show"} Completed Words
+            </button>
             <button
               type='button'
               className='btn btn-secondary'

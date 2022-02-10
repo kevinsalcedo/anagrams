@@ -22,11 +22,11 @@ function MainNav() {
                 Sevens
               </Link>
             </li>
-            {/* <li className='nav-item'>
+            <li className='nav-item'>
               <Link className='nav-link' to='/eights'>
                 Eights
               </Link>
-            </li> */}
+            </li>
           </ul>
         </div>
         <div className='d-flex'>

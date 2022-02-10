@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { getSevenOfTheDay, markCompleted } from "../wordUtils";
+import { useState } from "react";
+import { getWord, markWordCompleted } from "../wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
@@ -12,12 +12,14 @@ import TileDisplay from "../components/TileDisplay";
 import ToastMessage from "../components/ToastMessage";
 
 function Sevens() {
+  const LIST_NAME = "sevens";
+  // Game state
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [answer, setAnswer] = useState(null);
   const [guessString, setGuessString] = useState("");
-  const keyboard = useRef();
 
+  // Toast state
   const [visible, setVisible] = useState(false);
   const [msg, setMsg] = useState("");
   const [toastType, setToastType] = useState("");
@@ -32,12 +34,10 @@ function Sevens() {
     if (useNewWord) {
       setSolved(false);
       setAttempts(0);
-      setAnswer(getSevenOfTheDay());
-    }
-    if (keyboard.current) {
-      keyboard.current.clearInput();
+      setAnswer(getWord(LIST_NAME));
     }
     setGuessString("");
+    toggleToast(false);
   }
 
   // Handler for submitting a guess with the Enter key
@@ -49,11 +49,12 @@ function Sevens() {
     }
 
     // Increment guess attempt count
-    setAttempts((prev) => prev + 1);
+    let numAttempts = attempts + 1;
+    setAttempts(numAttempts);
 
     if (guess === answer.word) {
       setSolved(true);
-      markCompleted("Sevens", answer.index);
+      markWordCompleted(LIST_NAME, answer.index, numAttempts);
 
       toggleToast(true, GUESS_SUCCESS, "success");
       return;
@@ -63,21 +64,42 @@ function Sevens() {
     if (
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
-      // resetForm(false);
+      resetForm(false);
       toggleToast(true, GUESS_INVALID, "danger");
       return;
     }
 
     // Incorrect guess
-    // resetForm(false);
+    resetForm(false);
     toggleToast(true, GUESS_INCORRECT, "danger");
   }
 
   // Set the guess based on physical and virtual keyboard input
-  function handleGuess(guess) {
-    if (guess.length <= answer.word.length) {
-      toggleToast(false);
-      setGuessString(guess);
+  function handleInput(character) {
+    toggleToast(false);
+    const pattern = /^[a-zA-Z]$/;
+    if (character === "{backspace}") {
+      setGuessString((prev) => {
+        if (prev.length > 0) {
+          return prev.substring(0, prev.length - 1);
+        }
+        return "";
+      });
+    }
+    if (character === "{enter}") {
+      if (solved) {
+        resetForm(true);
+      } else {
+        handleSubmit();
+      }
+    }
+    if (pattern.test(character)) {
+      setGuessString((prev) => {
+        if (prev.length < answer.word.length) {
+          return prev + character.toUpperCase();
+        }
+        return prev;
+      });
     }
   }
 
@@ -117,12 +139,7 @@ function Sevens() {
           )}
         </div>
       </div>
-      <SoftKeyboard
-        keyboard={keyboard}
-        handleInput={handleGuess}
-        handleSubmit={handleSubmit}
-        solved={solved}
-      />
+      <SoftKeyboard handleInput={handleInput} />
     </>
   );
 }
