@@ -1,6 +1,6 @@
 import GameTile from "./GameTile";
 
-function TileDisplay({ size, word, solved, readOnly }) {
+function TileDisplay({ size, word, solved, readOnly, handleTap }) {
   const fullWord = word + new Array(size - word.length).fill(" ").join("");
   return (
     <div className='row mx-0 px-0 justify-content-center'>
@@ -11,6 +11,7 @@ function TileDisplay({ size, word, solved, readOnly }) {
           index={index}
           solved={solved}
           readOnly={readOnly}
+          handleTap={handleTap}
         />
       ))}
     </div>

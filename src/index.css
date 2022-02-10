@@ -19,6 +19,7 @@ body,
   font-weight: bold;
   text-align: center;
   caret-color: transparent;
+  color: black;
 }
 .letter-tile-filled {
   background-color: #c5c5c5;
@@ -31,11 +32,15 @@ body,
 
 .letter-tile-display {
   display: inline-block;
-  width: 2.4rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 3.4375rem;
   margin: 0.2rem;
   font-size: 2.25rem;
   background-color: #949494;
+}
+
+.tile-noclick {
+  cursor: default !important;
 }
 
 .simple-keyboard {

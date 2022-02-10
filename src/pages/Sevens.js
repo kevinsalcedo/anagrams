@@ -110,6 +110,11 @@ function Sevens() {
     setToastType(show ? type : "");
   }
 
+  function tileClick(value) {
+    console.log(value);
+    handleInput(value);
+  }
+
   return (
     <>
       <ToastMessage
@@ -125,6 +130,7 @@ function Sevens() {
             size={7}
             word={answer.word.split("").sort().join("")}
             readOnly
+            handleTap={tileClick}
           />
           <TileDisplay size={7} word={guessString} solved={solved} />
           <small className='text-muted'>Number of attempts: {attempts}</small>

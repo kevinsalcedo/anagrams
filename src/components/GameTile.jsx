@@ -1,4 +1,10 @@
-function GameTile({ value, index, solved = false, readOnly = false }) {
+function GameTile({
+  value,
+  index,
+  solved = false,
+  readOnly = false,
+  handleTap,
+}) {
   let styles = "";
   if (value !== " " && !solved) {
     styles += " letter-tile-filled";
@@ -9,13 +15,22 @@ function GameTile({ value, index, solved = false, readOnly = false }) {
   if (readOnly) {
     styles += " letter-tile-display";
   }
+  if (!solved && !readOnly) {
+    styles += " tile-noclick";
+  }
+
   return (
-    <span
+    <button
       key={index}
       className={`d-flex border letter-tile ${styles} align-items-center justify-content-center align-items-center`}
+      onClick={() => {
+        if (readOnly && !solved) {
+          handleTap(value);
+        }
+      }}
     >
       <p className={!solved ? "h3" : "h1"}>{value}</p>
-    </span>
+    </button>
   );
 }
 
