@@ -2,6 +2,7 @@ html,
 body,
 #root {
   height: 100%;
+  font-family: "VT323", monospace;
 }
 
 .main-wrapper {
@@ -43,6 +44,10 @@ body,
 
 .simple-keyboard {
   max-width: 75%;
+}
+
+.simple-keyboard {
+  font-family: "VT323", monospace;
 }
 
 @media (max-width: 600px) {

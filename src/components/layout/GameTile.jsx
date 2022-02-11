@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 function GameTile({
   value,
   index,
@@ -18,13 +20,15 @@ function GameTile({
 
   return (
     <button
-      key={index}
+      key={`tile-${index}`}
+      id={`tile-${index}`}
       className={`d-flex border letter-tile ${styles} align-items-center justify-content-center align-items-center`}
       onClick={() => {
         if (readOnly && !solved) {
           handleTap(value);
         }
       }}
+      onKeyDown={(e) => e.preventDefault()}
     >
       <p className={!solved ? "h3" : "h1"}>{value}</p>
     </button>
