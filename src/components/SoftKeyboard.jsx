@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-import { alphaLayout, alphaDisplay } from "../assets/keyboardUtils";
+import { alphaLayout, alphaDisplay } from "../utils/keyboardUtils";
 
 function SoftKeyboard({ handleInput }) {
   const keeb = useRef();

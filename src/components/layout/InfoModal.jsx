@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getWordList, getListData } from "../wordUtils";
+import { getWordList, getListData } from "../../utils/wordUtils";
 function InfoModal() {
   const wordList = getWordList("sevens");
   const listData = getListData("sevens");
@@ -7,7 +7,6 @@ function InfoModal() {
 
   let avgAttempts = 0;
   if (listData && listData.completed.length) {
-    console.log(listData);
     avgAttempts = listData.attempts / listData.completed.length;
   }
 

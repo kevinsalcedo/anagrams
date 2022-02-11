@@ -15,9 +15,6 @@ function GameTile({
   if (readOnly) {
     styles += " letter-tile-display";
   }
-  if (!solved && !readOnly) {
-    styles += " tile-noclick";
-  }
 
   return (
     <button

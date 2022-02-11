@@ -1,4 +1,4 @@
-import { common_sevens } from "./assets/common_sevens.js";
+import { common_sevens } from "../assets/common_sevens.js";
 
 export function getWordList(listName) {
   if (listName === "sevens") {

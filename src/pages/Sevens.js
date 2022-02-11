@@ -1,28 +1,25 @@
 import { useState } from "react";
-import { getWord, markWordCompleted } from "../wordUtils";
+import { getWord, markWordCompleted } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
   GUESS_INCORRECT,
   GUESS_INVALID,
+  SKIP_ALERT,
 } from "../assets/alertMessages";
-import PageTitle from "../components/PageTitle";
+import PageTitle from "../components/layout/PageTitle";
 import SoftKeyboard from "../components/SoftKeyboard";
-import TileDisplay from "../components/TileDisplay";
-import ToastMessage from "../components/ToastMessage";
+import TileDisplay from "../components/layout/TileDisplay";
 
-function Sevens() {
+function Sevens({ toggleToast }) {
   const LIST_NAME = "sevens";
   // Game state
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [answer, setAnswer] = useState(null);
   const [guessString, setGuessString] = useState("");
-
-  // Toast state
-  const [visible, setVisible] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [toastType, setToastType] = useState("");
+  // Conditional to clear entire word on incorrect guess
+  const [clearWord, setClearWord] = useState(false);
 
   if (!answer) {
     resetForm(true);
@@ -64,31 +61,35 @@ function Sevens() {
     if (
       guess.split("").sort().join("") !== answer.word.split("").sort().join("")
     ) {
-      resetForm(false);
       toggleToast(true, GUESS_INVALID, "danger");
+      setClearWord(true);
+
       return;
     }
 
     // Incorrect guess
-    resetForm(false);
     toggleToast(true, GUESS_INCORRECT, "danger");
+    setClearWord(true);
   }
 
   // Set the guess based on physical and virtual keyboard input
   function handleInput(character) {
     toggleToast(false);
+
     const pattern = /^[a-zA-Z]$/;
     if (character === "{backspace}") {
       setGuessString((prev) => {
-        if (prev.length > 0) {
+        if (prev.length > 0 && !clearWord) {
           return prev.substring(0, prev.length - 1);
         }
         return "";
       });
+      setClearWord(false);
     }
     if (character === "{enter}") {
-      if (solved) {
-        resetForm(true);
+      if (solved || clearWord) {
+        resetForm(!clearWord);
+        setClearWord(false);
       } else {
         handleSubmit();
       }
@@ -98,31 +99,17 @@ function Sevens() {
         if (prev.length < answer.word.length) {
           return prev + character.toUpperCase();
         }
+        if (clearWord) {
+          setClearWord(false);
+          return character.toUpperCase();
+        }
         return prev;
       });
     }
   }
 
-  // Let the ToastMessage comoponent know if it should render
-  function toggleToast(show, msg, type) {
-    setVisible(show);
-    setMsg(show ? msg : "");
-    setToastType(show ? type : "");
-  }
-
-  function tileClick(value) {
-    console.log(value);
-    handleInput(value);
-  }
-
   return (
     <>
-      <ToastMessage
-        visible={visible}
-        setVisible={setVisible}
-        msg={msg}
-        type={toastType}
-      />
       <div id='contentRow' className='row justify-content-center flex-grow-1'>
         <PageTitle title='Anagram of the Day' />
         <div id='tilesRow' className='row px-0 mb-auto gy-2'>
@@ -130,17 +117,21 @@ function Sevens() {
             size={7}
             word={answer.word.split("").sort().join("")}
             readOnly
-            handleTap={tileClick}
+            handleTap={handleInput}
           />
           <TileDisplay size={7} word={guessString} solved={solved} />
           <small className='text-muted'>Number of attempts: {attempts}</small>
-          {solved && (
+        </div>
+        <div className='row align-items-center justify-content-center'>
+          {(solved || attempts > 5) && (
             <button
-              className='btn mx-auto bg-success bg-opacity-75 text-white'
+              className={`btn mx-auto bg-${
+                solved ? "success" : "secondary  text-white"
+              } bg-opacity-75`}
               onClick={() => resetForm(true)}
               style={{ width: "5rem" }}
             >
-              Next
+              {solved ? "Next" : "Skip"}
             </button>
           )}
         </div>

@@ -8,7 +8,7 @@ function ToastMessage({ visible, setVisible, msg, type }) {
     var myToast = toastRef.current;
     var bsToast = Toast.getInstance(myToast);
     if (!bsToast) {
-      bsToast = new Toast(myToast);
+      bsToast = new Toast(myToast, { delay: 10000 });
       bsToast.hide();
       setVisible(false);
     } else {
