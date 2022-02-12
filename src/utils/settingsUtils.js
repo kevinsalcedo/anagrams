@@ -1,8 +1,8 @@
-export function saveSettings(data) {
+export function saveUserPreferences(data) {
   localStorage.setItem("anagramSettings", JSON.stringify(data));
 }
 
-export function getSettings() {
+export function getUserPreferences() {
   let anagramSettings = localStorage.getItem("anagramSettings");
 
   if (anagramSettings) {
@@ -14,12 +14,12 @@ export function getSettings() {
     theme: "light",
   };
 
-  saveSettings(anagramSettings);
+  saveUserPreferences(anagramSettings);
   return anagramSettings;
 }
 
-export function getEasyModeSetting() {
-  const settings = getSettings();
+export function isEasyMode() {
+  const settings = getUserPreferences();
 
   if (settings.hasOwnProperty("easyMode")) {
     return settings.easyMode;
@@ -28,17 +28,17 @@ export function getEasyModeSetting() {
   return false;
 }
 
-export function toggleEasyModeSetting() {
-  let settings = { ...getSettings() };
+export function toggleEasyMode() {
+  let settings = { ...getUserPreferences() };
 
   settings["easyMode"] = settings.hasOwnProperty("easyMode")
     ? !settings["easyMode"]
     : false;
-  saveSettings(settings);
+  saveUserPreferences(settings);
 }
 
-export function getThemeSetting() {
-  const settings = getSettings();
+export function getTheme() {
+  const settings = getUserPreferences();
 
   if (settings.hasOwnProperty("theme")) {
     return settings.theme;
@@ -47,11 +47,24 @@ export function getThemeSetting() {
   return "light";
 }
 
-export function toggleThemeSetting() {
-  let settings = { ...getSettings() };
+export function toggleTheme() {
+  let settings = { ...getUserPreferences() };
 
   const currTheme = settings.hasOwnProperty("theme") ? settings.theme : "light";
 
   settings["theme"] = currTheme === "light" ? "dark" : "light";
-  saveSettings(settings);
+  saveUserPreferences(settings);
+}
+
+const GAME_SETTINGS = {
+  "sevens" : {
+    WORD_SIZE: 7,
+  },
+  "eights" : {
+    WORD_SIZE: 8
+  }
+}
+
+export function getGameSettings(name) {
+  return GAME_SETTINGS[name];
 }

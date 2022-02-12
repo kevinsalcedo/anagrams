@@ -5,6 +5,7 @@ import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
 import Sevens from "./pages/Sevens";
 import Eights from "./pages/Eights";
+import { getGameSettings } from "./utils/settingsUtils";
 import { useState } from "react";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
@@ -33,7 +34,7 @@ function App() {
       />
       <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
         <Routes>
-          <Route path='/' element={<Sevens toggleToast={toggleToast} />} />
+          <Route path='/' element={<Sevens game={"sevens"} toggleToast={toggleToast} title={"Anagram of the Day"}/>} />
           <Route path='/eights' element={<Eights />} />
         </Routes>
       </main>

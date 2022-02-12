@@ -1,4 +1,5 @@
 import { common_sevens } from "../assets/common_sevens.js";
+import { random_ten} from '../assets/random_ten';
 import moment from 'moment';
 
 // TODO: Set to be the launch day
@@ -12,6 +13,8 @@ export function getDay() {
 export function getWordList(listName) {
   if (listName === "sevens") {
     return common_sevens;
+  } else if (listName === "eights") {
+    return random_ten;
   }
   // TODO: add more lists
   return common_sevens;

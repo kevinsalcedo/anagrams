@@ -5,21 +5,20 @@ import {
   GUESS_INCOMPLETE,
   GUESS_INCORRECT,
   GUESS_INVALID,
-  SKIP_ALERT,
 } from "../assets/alertMessages";
+import {getGameSettings} from '../utils/settingsUtils'
 import PageTitle from "../components/layout/PageTitle";
 import SoftKeyboard from "../components/SoftKeyboard";
 import TileDisplay from "../components/layout/TileDisplay";
 
-function Sevens({ toggleToast }) {
-  // TODO: Make this depend on the mode
-  const LIST_NAME = "sevens";
+function Sevens({ toggleToast, title, game }) {
   // Game state
   const [answer, setAnswer] = useState(null);
   const [solved, setSolved] = useState(false);
   const [guessString, setGuessString] = useState("");
   // Conditional to clear entire word on incorrect guess
   const [clearWord, setClearWord] = useState(false);
+  const [gameSettings, setGameSettings] = useState(null);
 
 
   // Load in the word of the day
@@ -28,15 +27,19 @@ function Sevens({ toggleToast }) {
   },[])
 
   function initWord() {
-    const word = getWord(LIST_NAME);
+    // Initialize game settings
+    const gameSettings = getGameSettings(game);
+    setGameSettings(gameSettings);
+
+    // Initialize game state
+    const word = getWord(game);
     if(word) {
-      const completed = isWordCompleted(LIST_NAME, word.index);
+      const completed = isWordCompleted(game, word.index);
       setAnswer(word);
       setSolved(completed);
       setGuessString(completed ? word.word : "");
     }
   }
-  
 
   // First render, before answer is retrieved
   if (!answer) {
@@ -56,7 +59,7 @@ function Sevens({ toggleToast }) {
     // Correct answer
     if (guess === answer.word) {
       setSolved(true);
-      markWordCompleted(LIST_NAME, answer.index);
+      markWordCompleted(game, answer.index);
 
       toggleToast(true, GUESS_SUCCESS, "success");
       return;
@@ -115,15 +118,15 @@ function Sevens({ toggleToast }) {
   return (
     <>
       <div id='contentRow' className='row justify-content-center flex-grow-1'>
-        <PageTitle title='Anagram of the Day' />
+        <PageTitle title={title} />
         <div id='tilesRow' className='row px-0 mb-auto gy-2'>
           <TileDisplay
-            size={7}
+            size={gameSettings.WORD_SIZE}
             word={answer.word.split("").sort().join("")}
             readOnly
             handleTap={handleInput}
           />
-          <TileDisplay size={7} word={guessString} solved={solved} />
+          <TileDisplay size={gameSettings.WORD_SIZE} word={guessString} solved={solved} />
         </div>
       </div>
       <SoftKeyboard handleInput={handleInput} disabled={solved} />

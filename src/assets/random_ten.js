@@ -1,4 +1,4 @@
-export const eights_random_ten = {
+export const random_ten = {
    "BATHROOM": [
       {
          "ALPHA": "ABHMOORT",
