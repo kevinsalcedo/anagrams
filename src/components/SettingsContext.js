@@ -22,7 +22,6 @@ export const SettingsContextProvider = (props) => {
       ...state,
       settings: { ...state.settings, easyMode: getEasyModeSetting() },
     });
-    console.log(state);
   };
 
   const toggleTheme = () => {
@@ -31,7 +30,6 @@ export const SettingsContextProvider = (props) => {
       ...state,
       settings: { ...state.settings, theme: getThemeSetting() },
     });
-    console.log(state);
   };
 
   const initState = {

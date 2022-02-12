@@ -1,4 +1,13 @@
 import { common_sevens } from "../assets/common_sevens.js";
+import moment from 'moment';
+
+// TODO: Set to be the launch day
+const FIRST_DAY = moment([2022,1,12]);
+
+export function getDay() {
+  let today = moment();
+  return today.diff(FIRST_DAY, "days");
+}
 
 export function getWordList(listName) {
   if (listName === "sevens") {
@@ -28,7 +37,7 @@ export function getSavedData() {
 
 // Return list data object for app
 // Returns - JSON object of list data
-export function getListData(listName) {
+export function getListData(listName, returnWords) {
   const words = getWordList(listName);
   let data = getSavedData();
 
@@ -37,7 +46,6 @@ export function getListData(listName) {
   if (!listData) {
     const newListData = {
       completed: [],
-      attempts: 0,
     };
     listData = newListData;
     data[listName] = newListData;
@@ -46,7 +54,7 @@ export function getListData(listName) {
 
   // Get actual words from saved indices
   let completedWords = [];
-  if (listData.completed) {
+  if (returnWords && listData.completed) {
     for (let i = 0; i < listData.completed.length; i++) {
       completedWords.push(words[listData.completed[i]]);
     }
@@ -54,8 +62,7 @@ export function getListData(listName) {
 
   // Return list of actual completed words, and number of attempts
   return {
-    completed: completedWords,
-    attempts: listData.attempts,
+    completed: returnWords ? completedWords : listData.completed,
   };
 }
 
@@ -63,15 +70,7 @@ export function getListData(listName) {
 // Returns - JSON object containing word and index in list
 export function getWord(listName) {
   let list = getWordList(listName);
-  let idx = Math.floor(Math.random() * list.length + 1);
-
-  // Make sure that the word we generate is new
-  let completedWords = getListData(listName).completed;
-  if (completedWords) {
-    while (completedWords.includes(idx)) {
-      idx = Math.floor(Math.random() * list.length + 1);
-    }
-  }
+  let idx = getDay();
 
   // Return object with index + word so that it can be marked complete
   return {
@@ -80,14 +79,18 @@ export function getWord(listName) {
   };
 }
 
+export function isWordCompleted(listName, index) {
+  const data = getListData(listName,false).completed;
+  return data.includes(index);
+}
+
 // Save index and number of attempts of completed anagram to given list
 // Returns - nothing
-export function markWordCompleted(listName, index, numAttempts) {
-  const listData = getListData(listName);
+export function markWordCompleted(listName, index) {
+  const listData = getListData(listName, false);
 
   let newListData = {
     completed: [...listData.completed, index],
-    attempts: listData.attempts + numAttempts,
   };
 
   let newData = {
@@ -106,7 +109,6 @@ export function resetAllData() {
 export function resetDataForList(listName) {
   let newListData = {
     completed: [],
-    attempts: 0,
   };
 
   let newData = {

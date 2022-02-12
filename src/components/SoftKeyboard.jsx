@@ -3,11 +3,14 @@ import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import { alphaLayout, alphaDisplay } from "../utils/keyboardUtils";
 
-function SoftKeyboard({ handleInput }) {
+function SoftKeyboard({ handleInput, disabled }) {
   const keeb = useRef();
 
   // Handler for entering text through the virtual keyboard
   function handleKeyPress(e) {
+    if(disabled) {
+      return;
+    }
     const pattern = /^[a-zA-Z]$/;
     if (e === "{backspace}" || e === "{enter}" || pattern.test(e)) {
       handleInput(e);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getWordList, getListData } from "../../utils/wordUtils";
 function InfoModal() {
   const wordList = getWordList("sevens");
-  const listData = getListData("sevens");
+  const listData = getListData("sevens", true);
   const [wordsVisible, setWordsVisible] = useState(false);
 
   let avgAttempts = 0;

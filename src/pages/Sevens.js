@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getWord, markWordCompleted } from "../utils/wordUtils";
+import { useEffect, useState } from "react";
+import { getWord, isWordCompleted, markWordCompleted } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
@@ -12,29 +12,37 @@ import SoftKeyboard from "../components/SoftKeyboard";
 import TileDisplay from "../components/layout/TileDisplay";
 
 function Sevens({ toggleToast }) {
+  // TODO: Make this depend on the mode
   const LIST_NAME = "sevens";
   // Game state
+  const [answer, setAnswer] = useState(null);
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
-  const [answer, setAnswer] = useState(null);
   const [guessString, setGuessString] = useState("");
   // Conditional to clear entire word on incorrect guess
   const [clearWord, setClearWord] = useState(false);
 
-  if (!answer) {
-    resetForm(true);
-    return <div>Loading..</div>;
-  }
 
-  // Reset attempts & guess data, and get new uncompleted word
-  function resetForm(useNewWord) {
-    if (useNewWord) {
-      setSolved(false);
+  // Load in the word of the day
+  useEffect(() => {
+    initWord();
+  },[])
+
+  function initWord() {
+    const word = getWord(LIST_NAME);
+    if(word) {
+      const completed = isWordCompleted(LIST_NAME, word.index);
+      setAnswer(word);
+      setSolved(completed);
       setAttempts(0);
-      setAnswer(getWord(LIST_NAME));
+      setGuessString(completed ? word.word : "");
     }
-    setGuessString("");
-    toggleToast(false);
+  }
+  
+
+  if (!answer) {
+    initWord();
+    return <div>Loading..</div>;
   }
 
   // Handler for submitting a guess with the Enter key
@@ -88,7 +96,6 @@ function Sevens({ toggleToast }) {
     }
     if (character === "{enter}") {
       if (solved || clearWord) {
-        resetForm(!clearWord);
         setClearWord(false);
       } else {
         handleSubmit();
@@ -120,23 +127,9 @@ function Sevens({ toggleToast }) {
             handleTap={handleInput}
           />
           <TileDisplay size={7} word={guessString} solved={solved} />
-          <small className='text-muted'>Number of attempts: {attempts}</small>
-        </div>
-        <div className='row align-items-center justify-content-center'>
-          {(solved || attempts > 5) && (
-            <button
-              className={`btn mx-auto bg-${
-                solved ? "success" : "secondary  text-white"
-              } bg-opacity-75`}
-              onClick={() => resetForm(true)}
-              style={{ width: "5rem" }}
-            >
-              {solved ? "Next" : "Skip"}
-            </button>
-          )}
         </div>
       </div>
-      <SoftKeyboard handleInput={handleInput} />
+      <SoftKeyboard handleInput={handleInput} disabled={solved} />
     </>
   );
 }
