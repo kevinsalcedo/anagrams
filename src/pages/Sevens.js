@@ -17,7 +17,6 @@ function Sevens({ toggleToast }) {
   // Game state
   const [answer, setAnswer] = useState(null);
   const [solved, setSolved] = useState(false);
-  const [attempts, setAttempts] = useState(0);
   const [guessString, setGuessString] = useState("");
   // Conditional to clear entire word on incorrect guess
   const [clearWord, setClearWord] = useState(false);
@@ -34,12 +33,12 @@ function Sevens({ toggleToast }) {
       const completed = isWordCompleted(LIST_NAME, word.index);
       setAnswer(word);
       setSolved(completed);
-      setAttempts(0);
       setGuessString(completed ? word.word : "");
     }
   }
   
 
+  // First render, before answer is retrieved
   if (!answer) {
     initWord();
     return <div>Loading..</div>;
@@ -48,18 +47,16 @@ function Sevens({ toggleToast }) {
   // Handler for submitting a guess with the Enter key
   function handleSubmit() {
     const guess = guessString;
+    // Use has not filled in entire guess
     if (guessString.length !== answer.word.length) {
       toggleToast(true, GUESS_INCOMPLETE, "warning");
       return;
     }
 
-    // Increment guess attempt count
-    let numAttempts = attempts + 1;
-    setAttempts(numAttempts);
-
+    // Correct answer
     if (guess === answer.word) {
       setSolved(true);
-      markWordCompleted(LIST_NAME, answer.index, numAttempts);
+      markWordCompleted(LIST_NAME, answer.index);
 
       toggleToast(true, GUESS_SUCCESS, "success");
       return;
