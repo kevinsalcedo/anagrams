@@ -24,7 +24,7 @@ function App() {
 
   return (
     // <SettingsContextProvider>
-    <div className='h-100 d-flex flex-column text-center'>
+    <div className="h-100 d-flex flex-column text-center">
       <MainNav />
       <ToastMessage
         visible={toastVisible}
@@ -32,10 +32,30 @@ function App() {
         msg={toastMsg}
         type={toastType}
       />
-      <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
+      <main className="container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1">
         <Routes>
-          <Route path='/' element={<Sevens game={"sevens"} toggleToast={toggleToast} title={"Anagram of the Day"}/>} />
-          <Route path='/eights' element={<Eights />} />
+          <Route
+            path="/"
+            element={
+              <Sevens
+                game={"sevens"}
+                toggleToast={toggleToast}
+                title={"Anagram of the Day"}
+              />
+            }
+          />
+          <Route path="/eights" element={<Eights />} />
+          <Route
+            path="/archive"
+            element={
+              <Sevens
+                game={"sevens"}
+                toggleToast={toggleToast}
+                title={"AOTD Archives"}
+                isArchive
+              />
+            }
+          />
         </Routes>
       </main>
       <InfoModal />

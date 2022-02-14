@@ -1,9 +1,9 @@
 import { common_sevens } from "../assets/common_sevens.js";
-import { random_ten} from '../assets/random_ten';
-import moment from 'moment';
+import { random_ten } from "../assets/random_ten";
+import moment from "moment";
 
 // TODO: Set to be the launch day
-const FIRST_DAY = moment([2022,1,12]);
+const FIRST_DAY = moment([2022, 1, 1]);
 
 export function getDay() {
   let today = moment();
@@ -71,9 +71,14 @@ export function getListData(listName, returnWords) {
 
 // Get a new word from the list
 // Returns - JSON object containing word and index in list
-export function getWord(listName) {
+export function getWord(listName, useArchive) {
   let list = getWordList(listName);
   let idx = getDay();
+
+  // If useArchive is true, return a random index of the older
+  if (useArchive) {
+    idx = Math.floor(Math.random() * getDay());
+  }
 
   // Return object with index + word so that it can be marked complete
   return {
@@ -83,7 +88,7 @@ export function getWord(listName) {
 }
 
 export function isWordCompleted(listName, index) {
-  const data = getListData(listName,false).completed;
+  const data = getListData(listName, false).completed;
   return data.includes(index);
 }
 

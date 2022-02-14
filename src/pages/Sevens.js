@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import { getWord, isWordCompleted, markWordCompleted } from "../utils/wordUtils";
+import {
+  getWord,
+  isWordCompleted,
+  markWordCompleted,
+} from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
   GUESS_INCOMPLETE,
   GUESS_INCORRECT,
   GUESS_INVALID,
 } from "../assets/alertMessages";
-import {getGameSettings} from '../utils/settingsUtils'
+import { getGameSettings } from "../utils/settingsUtils";
 import PageTitle from "../components/layout/PageTitle";
 import SoftKeyboard from "../components/SoftKeyboard";
 import TileDisplay from "../components/layout/TileDisplay";
 
-function Sevens({ toggleToast, title, game }) {
+function Sevens({ toggleToast, title, game, isArchive = false }) {
   // Game state
   const [answer, setAnswer] = useState(null);
   const [solved, setSolved] = useState(false);
@@ -20,11 +24,10 @@ function Sevens({ toggleToast, title, game }) {
   const [clearWord, setClearWord] = useState(false);
   const [gameSettings, setGameSettings] = useState(null);
 
-
   // Load in the word of the day
   useEffect(() => {
     initWord();
-  },[])
+  }, [answer]);
 
   function initWord() {
     // Initialize game settings
@@ -32,8 +35,8 @@ function Sevens({ toggleToast, title, game }) {
     setGameSettings(gameSettings);
 
     // Initialize game state
-    const word = getWord(game);
-    if(word) {
+    const word = getWord(game, isArchive);
+    if (word) {
       const completed = isWordCompleted(game, word.index);
       setAnswer(word);
       setSolved(completed);
@@ -117,16 +120,20 @@ function Sevens({ toggleToast, title, game }) {
 
   return (
     <>
-      <div id='contentRow' className='row justify-content-center flex-grow-1'>
+      <div id="contentRow" className="row justify-content-center flex-grow-1">
         <PageTitle title={title} />
-        <div id='tilesRow' className='row px-0 mb-auto gy-2'>
+        <div id="tilesRow" className="row px-0 mb-auto gy-2">
           <TileDisplay
             size={gameSettings.WORD_SIZE}
             word={answer.word.split("").sort().join("")}
             readOnly
             handleTap={handleInput}
           />
-          <TileDisplay size={gameSettings.WORD_SIZE} word={guessString} solved={solved} />
+          <TileDisplay
+            size={gameSettings.WORD_SIZE}
+            word={guessString}
+            solved={solved}
+          />
         </div>
       </div>
       <SoftKeyboard handleInput={handleInput} disabled={solved} />
