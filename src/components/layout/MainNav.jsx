@@ -20,7 +20,7 @@ function MainNav({ setGame }) {
           <span className='navbar-toggler-icon'></span>
         </button>
         <div
-          className='offcanvas offcanvas-end'
+          className='offcanvas offcanvas-start'
           tabIndex='-1'
           id='offcanvasNavbar'
         >
@@ -36,7 +36,7 @@ function MainNav({ setGame }) {
             ></button>
           </div>
           <div className='offcanvas-body'>
-            <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
+            <ul className='navbar-nav justify-content-start flex-grow-1 pe-3'>
               <li className='nav-item '>
                 <button
                   className='btn nav-link'
