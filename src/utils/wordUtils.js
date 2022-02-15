@@ -3,7 +3,7 @@ import { random_ten } from "../assets/random_ten";
 import moment from "moment";
 
 // TODO: Set to be the launch day
-const FIRST_DAY = moment([2022, 1, 1]);
+export const FIRST_DAY = moment([2022, 1, 1]);
 
 export function getDay() {
   let today = moment();
@@ -62,7 +62,6 @@ export function getListData(listName, returnWords) {
       completedWords.push(words[listData.completed[i]]);
     }
   }
-
   // Return list of actual completed words, and number of attempts
   return {
     completed: returnWords ? completedWords : listData.completed,
@@ -75,15 +74,39 @@ export function getWord(listName, useArchive) {
   let list = getWordList(listName);
   let idx = getDay();
 
-  // If useArchive is true, return a random index of the older
+  // If useArchive is true, return the earliest non-completed word
   if (useArchive) {
-    idx = Math.floor(Math.random() * getDay());
+    idx = 0;
+    let archivedCompleted = getListData("archived-" + listName, false);
+    if (archivedCompleted && archivedCompleted.completed) {
+      let found = false;
+      while (!found && idx < getDay()) {
+        if (archivedCompleted.completed.includes(idx)) {
+          idx++;
+        } else {
+          found = true;
+        }
+      }
+    }
   }
 
   // Return object with index + word so that it can be marked complete
   return {
     index: idx,
     word: list[idx],
+  };
+}
+
+// For archived retrieval of past words
+export function getWordByIndex(listName, index) {
+  // Cannot request words in the future
+  if (index > getDay()) {
+    return null;
+  }
+  let list = getWordList(listName);
+  return {
+    index: index,
+    word: list[index],
   };
 }
 

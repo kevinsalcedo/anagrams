@@ -3,10 +3,11 @@ import MainNav from "./components/layout/MainNav";
 import InfoModal from "./components/layout/InfoModal";
 import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
-import Sevens from "./pages/Sevens";
 import Eights from "./pages/Eights";
 import { getGameSettings } from "./utils/settingsUtils";
 import { useState } from "react";
+import ArchivesPage from "./pages/ArchivesPage";
+import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
   return (
     // <SettingsContextProvider>
-    <div className="h-100 d-flex flex-column text-center">
+    <div className='h-100 d-flex flex-column text-center'>
       <MainNav />
       <ToastMessage
         visible={toastVisible}
@@ -32,23 +33,23 @@ function App() {
         msg={toastMsg}
         type={toastType}
       />
-      <main className="container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1">
+      <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
         <Routes>
           <Route
-            path="/"
+            path='/'
             element={
-              <Sevens
+              <AnagramOfTheDay
                 game={"sevens"}
                 toggleToast={toggleToast}
                 title={"Anagram of the Day"}
               />
             }
           />
-          <Route path="/eights" element={<Eights />} />
+          <Route path='/eights' element={<Eights />} />
           <Route
-            path="/archive"
+            path='/archive'
             element={
-              <Sevens
+              <ArchivesPage
                 game={"sevens"}
                 toggleToast={toggleToast}
                 title={"AOTD Archives"}

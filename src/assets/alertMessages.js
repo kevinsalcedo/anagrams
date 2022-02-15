@@ -7,5 +7,8 @@ export const GUESS_INCORRECT = "Not quite! Try again!";
 export const GUESS_INVALID = "Word does not match the given characters.";
 
 // Use for archived words
-export const SKIP_ALERT =
+export const ARCHIVE_SKIP =
   "Feeling stuck? Press Skip to move on to the next word.";
+
+export const ARCHIVE_NEXT =
+  "Well done! Press next or hit Enter to move on to the next word.";
