@@ -36,10 +36,11 @@ function MainNav({ setGame }) {
             ></button>
           </div>
           <div className='offcanvas-body'>
-            <ul className='navbar-nav justify-content-start flex-grow-1 pe-3'>
+            <ul className='navbar-nav justify-content-start pe-3'>
               <li className='nav-item '>
                 <button
                   className='btn nav-link'
+                  data-bs-dismiss='offcanvas'
                   onClick={() => toggleGame("sevens")}
                 >
                   Sevens
@@ -48,8 +49,7 @@ function MainNav({ setGame }) {
               <li className='nav-item'>
                 <button
                   className='btn nav-link'
-                  data-bs-target='#navbarSupportedContent'
-                  aria-controls='navbarSupportedContent'
+                  data-bs-dismiss='offcanvas'
                   onClick={() => toggleGame("eights")}
                 >
                   Eights
@@ -58,8 +58,7 @@ function MainNav({ setGame }) {
               <li className='nav-item'>
                 <button
                   className='btn nav-link'
-                  data-bs-target='#navbarSupportedContent'
-                  aria-controls='navbarSupportedContent'
+                  data-bs-dismiss='offcanvas'
                   onClick={() => toggleGame("archived-sevens")}
                 >
                   Archive
