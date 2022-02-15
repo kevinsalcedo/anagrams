@@ -57,14 +57,19 @@ export function toggleTheme() {
 }
 
 const GAME_SETTINGS = {
-  "sevens" : {
+  sevens: {
     WORD_SIZE: 7,
   },
-  "eights" : {
-    WORD_SIZE: 8
-  }
-}
+  eights: {
+    WORD_SIZE: 8,
+  },
+};
+
+const ARCHIVED_PREFIX = "archived-";
 
 export function getGameSettings(name) {
+  if (name.includes(ARCHIVED_PREFIX)) {
+    name = name.split("-")[1];
+  }
   return GAME_SETTINGS[name];
 }

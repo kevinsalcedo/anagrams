@@ -31,8 +31,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   }, [game, isArchive, title]);
 
   function initWord() {
-    // console.log(`Initializing ${title}`);
-
     // Initialize game settings
     const gameSettings = getGameSettings(game);
     setGameSettings((prev) => gameSettings);
@@ -40,10 +38,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     // Initialize game state
     const word = getWord(game, isArchive);
     if (word) {
-      const completed = isWordCompleted(
-        isArchive ? "archived-" + game : game,
-        word.index
-      );
+      const completed = isWordCompleted(game, word.index);
       setAnswer((prev) => word);
       setSolved((prev) => completed);
       setGuessString((prev) => (completed ? word.word : ""));
@@ -67,9 +62,10 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     // Correct answer
     if (guess === answer.word) {
       setSolved(true);
-      markWordCompleted(isArchive ? "archived-" + game : game, answer.index);
+      markWordCompleted(game, answer.index);
 
       toggleToast(true, isArchive ? ARCHIVE_NEXT : GUESS_SUCCESS, "success");
+      // If in archive mode, then let the user clear the word on next input
       setClearWord(isArchive);
       return;
     }
@@ -91,12 +87,22 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
 
   // Set the guess based on physical and virtual keyboard input
   function handleInput(character) {
+    if (solved && !isArchive) {
+      return;
+    }
     toggleToast(false);
 
     const pattern = /^[a-zA-Z]$/;
     if (character === "{backspace}") {
       setGuessString((prev) => {
         if (prev.length > 0 && !clearWord) {
+          // Ignore the given character
+          if (
+            game.includes("eight") &&
+            prev.length === answer.letterIndex + 1
+          ) {
+            return prev.substring(0, prev.length - 2);
+          }
           return prev.substring(0, prev.length - 1);
         }
         return "";
@@ -115,6 +121,10 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     if (pattern.test(character)) {
       setGuessString((prev) => {
         if (prev.length < answer.word.length) {
+          // Append the given character
+          if (game.includes("eight") && prev.length === answer.letterIndex) {
+            return prev + answer.letter + character.toUpperCase();
+          }
           return prev + character.toUpperCase();
         }
         if (clearWord) {
@@ -128,8 +138,12 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
 
   return (
     <>
-      <div id='contentRow' className='row justify-content-center flex-grow-1'>
-        <PageTitle title={title} date={isArchive ? answer.index : null} />
+      <div id='contentRow' className='row justify-content-center mt-auto mb-2'>
+        <PageTitle
+          title={title}
+          subtitle={game}
+          date={isArchive ? answer.index : null}
+        />
         <div
           id='tilesRow'
           className='row px-0 mb-auto gy-2 justify-content-center'
@@ -144,8 +158,10 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
             size={gameSettings.WORD_SIZE}
             word={guessString}
             solved={solved}
+            fillLetter={game.includes("eight") ? answer.letter : null}
+            fillIndex={game.includes("eight") ? answer.letterIndex : null}
           />
-          {isArchive && (
+          {isArchive && solved && (
             <button
               className={`btn ${
                 solved ? "bg-success bg-opacity-75" : "btn-secondary"
@@ -159,7 +175,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
         </div>
       </div>
       <SoftKeyboard
-        name={title}
+        name={game}
         handleInput={handleInput}
         disabled={solved && !isArchive}
       />

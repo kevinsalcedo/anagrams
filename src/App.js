@@ -1,12 +1,9 @@
-import { Routes, Route } from "react-router-dom";
 import MainNav from "./components/layout/MainNav";
 import InfoModal from "./components/layout/InfoModal";
 import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
-import Eights from "./pages/Eights";
 import { getGameSettings } from "./utils/settingsUtils";
 import { useState } from "react";
-import ArchivesPage from "./pages/ArchivesPage";
 import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
@@ -15,6 +12,13 @@ function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastmsg] = useState("");
   const [toastType, setToastType] = useState("");
+
+  const [game, setGame] = useState("sevens");
+
+  function switchGame(game) {
+    setGame((prev) => game);
+    toggleToast(false);
+  }
 
   // Let the ToastMessage comoponent know if it should render
   function toggleToast(show, msg, type) {
@@ -26,7 +30,7 @@ function App() {
   return (
     // <SettingsContextProvider>
     <div className='h-100 d-flex flex-column text-center'>
-      <MainNav />
+      <MainNav setGame={switchGame} />
       <ToastMessage
         visible={toastVisible}
         setVisible={setToastVisible}
@@ -34,30 +38,14 @@ function App() {
         type={toastType}
       />
       <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
-        <Routes>
-          <Route
-            path='/'
-            element={
-              <AnagramOfTheDay
-                game={"sevens"}
-                toggleToast={toggleToast}
-                title={"Anagram of the Day"}
-              />
-            }
-          />
-          <Route path='/eights' element={<Eights />} />
-          <Route
-            path='/archive'
-            element={
-              <ArchivesPage
-                game={"sevens"}
-                toggleToast={toggleToast}
-                title={"AOTD Archives"}
-                isArchive
-              />
-            }
-          />
-        </Routes>
+        <AnagramOfTheDay
+          game={game}
+          toggleToast={toggleToast}
+          title={
+            game.includes("archived") ? "The Archives" : "Anagram of the Day"
+          }
+          isArchive={game === "archived-sevens"}
+        />
       </main>
       <InfoModal />
       <SettingsModal />

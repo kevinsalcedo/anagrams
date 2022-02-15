@@ -1,9 +1,9 @@
-import { common_sevens } from "../assets/common_sevens.js";
-import { random_ten } from "../assets/random_ten";
+import { shuffled_sevens } from "../assets/shuffled_sevens";
+import { random_eights } from "../assets/random_eights";
 import moment from "moment";
 
 // TODO: Set to be the launch day
-export const FIRST_DAY = moment([2022, 1, 1]);
+export const FIRST_DAY = moment([2022, 1, 15]);
 
 export function getDay() {
   let today = moment();
@@ -12,12 +12,12 @@ export function getDay() {
 
 export function getWordList(listName) {
   if (listName === "sevens") {
-    return common_sevens;
+    return shuffled_sevens;
   } else if (listName === "eights") {
-    return random_ten;
+    return random_eights;
   }
   // TODO: add more lists
-  return common_sevens;
+  return shuffled_sevens;
 }
 
 function saveData(allData) {
@@ -77,7 +77,7 @@ export function getWord(listName, useArchive) {
   // If useArchive is true, return the earliest non-completed word
   if (useArchive) {
     idx = 0;
-    let archivedCompleted = getListData("archived-" + listName, false);
+    let archivedCompleted = getListData(listName, false);
     if (archivedCompleted && archivedCompleted.completed) {
       let found = false;
       while (!found && idx < getDay()) {
@@ -90,11 +90,46 @@ export function getWord(listName, useArchive) {
     }
   }
 
+  // Eights handling since they are more complex
+  if (listName.includes("eights")) {
+    const listKeys = Object.keys(list);
+    if (idx > listKeys.length) {
+      idx = idx % listKeys.length;
+    }
+    // Get array of possible puzzle options for the given word
+    const wordOptions = list[listKeys[idx]];
+    // Generate an index based on the word's unicode composition
+    let random = getRandomizedIndex(listKeys[idx], wordOptions.length);
+    let wordObj = { ...wordOptions[random] };
+
+    if (wordObj.INDEX < 0) {
+      random = getRandomizedIndex(listKeys[idx], 8);
+      wordObj.INDEX = random;
+      wordObj.LETTER = listKeys[idx].charAt(random);
+    }
+
+    return {
+      index: idx,
+      word: listKeys[idx],
+      alpha: wordObj.ALPHA.replace(wordObj.LETTER, ""),
+      letter: wordObj.LETTER,
+      letterIndex: wordObj.INDEX,
+    };
+  }
+
   // Return object with index + word so that it can be marked complete
   return {
     index: idx,
     word: list[idx],
   };
+}
+
+function getRandomizedIndex(word, maxLength) {
+  let count = 0;
+  for (let i = 0; i < word.length; i++) {
+    count += word.charCodeAt(i);
+  }
+  return count % maxLength;
 }
 
 // For archived retrieval of past words

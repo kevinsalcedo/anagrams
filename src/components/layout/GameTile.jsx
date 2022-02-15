@@ -1,15 +1,18 @@
-import { useEffect } from "react";
-
 function GameTile({
   value,
   index,
   solved = false,
   readOnly = false,
   handleTap,
+  immutable,
 }) {
   let styles = "";
   if (value !== " " && !solved) {
-    styles += " letter-tile-filled";
+    if (!immutable) {
+      styles += " letter-tile-filled";
+    } else {
+      styles += " letter-tile-immutable";
+    }
   }
   if (solved && !readOnly) {
     styles += " bg-success bg-opacity-75 text-light";

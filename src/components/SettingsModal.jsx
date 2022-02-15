@@ -1,8 +1,14 @@
 // import { SettingsContext } from "./SettingsContext";
 // import { useContext } from "react";
 
+import { resetAllData } from "../utils/wordUtils";
+
 function SettingsModal() {
   // const { settings, toggleEasyMode, toggleTheme } = useContext(SettingsContext);
+  function resetData() {
+    resetAllData();
+    window.location.reload();
+  }
   return (
     <div
       className='modal fade modal-centered'
@@ -26,36 +32,9 @@ function SettingsModal() {
           </div>
           <div className='modal-body'>
             <div className='container d-flex mx-auto flex-column'>
-              <div className='form-check form-switch'>
-                <label htmlFor='easyToggle' className='form-check-label'>
-                  Enable Hints
-                </label>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  role='switch'
-                  id='easyToggle'
-                  checked={false}
-                  onChange={() => {
-                    // toggleEasyMode();
-                  }}
-                />
-              </div>
-              <div className='form-check form-switch'>
-                <label htmlFor='themeToggle' className='form-check-label'>
-                  Dark Mode
-                </label>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  role='switch'
-                  id='themeToggle'
-                  checked={false}
-                  onChange={() => {
-                    // toggleTheme();
-                  }}
-                />
-              </div>
+              <button className='btn bg-danger text-white' onClick={resetData}>
+                Reset All Data
+              </button>
             </div>
           </div>
 
