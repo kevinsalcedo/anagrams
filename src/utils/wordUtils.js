@@ -3,7 +3,7 @@ import { random_eights } from "../assets/random_eights";
 import moment from "moment";
 
 // TODO: Set to be the launch day
-export const FIRST_DAY = moment([2022, 1, 15]);
+export const FIRST_DAY = moment([2022, 0, 15]);
 
 export function getDay() {
   let today = moment();
@@ -169,6 +169,7 @@ export function markWordCompleted(listName, index) {
 // Reset ALL saved anagram data
 export function resetAllData() {
   saveData({});
+  window.location.reload();
 }
 
 // Reset saved anagram data for a given list
@@ -183,6 +184,7 @@ export function resetDataForList(listName) {
   newData[listName] = newListData;
 
   saveData(newData);
+  window.location.reload();
 }
 
 /*

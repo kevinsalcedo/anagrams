@@ -96,7 +96,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     if (character === "{backspace}") {
       setGuessString((prev) => {
         if (prev.length > 0 && !clearWord) {
-          // Ignore the given character
+          // [Eights Mode] Ignore the given character
           if (
             game.includes("eight") &&
             prev.length === answer.letterIndex + 1
@@ -121,9 +121,11 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     if (pattern.test(character)) {
       setGuessString((prev) => {
         if (prev.length < answer.word.length) {
-          // Append the given character
+          // [Eights Mode] If a different character, append. If same, act as if you added it
           if (game.includes("eight") && prev.length === answer.letterIndex) {
-            return prev + answer.letter + character.toUpperCase();
+            if (character.toUpperCase() !== answer.letter) {
+              return prev + answer.letter + character.toUpperCase();
+            }
           }
           return prev + character.toUpperCase();
         }
