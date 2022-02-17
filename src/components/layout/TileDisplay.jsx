@@ -11,7 +11,7 @@ function TileDisplay({
 }) {
   const fullWord = word + new Array(size - word.length).fill(" ").join("");
   return (
-    <div className='row mx-0 px-0 justify-content-center'>
+    <div className='row mx-0 mt-2 mb-2 px-0 justify-content-center'>
       {fullWord.split("").map((value, index) => (
         <GameTile
           key={index}

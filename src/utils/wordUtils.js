@@ -5,15 +5,54 @@ import moment from "moment";
 // TODO: Set to be the launch day
 export const FIRST_DAY = moment([2022, 0, 15]);
 
+// Get the current day's index
 export function getDay() {
   let today = moment();
   return today.diff(FIRST_DAY, "days");
 }
 
+// Get the day index of the given date
+export function getDayDiff(date) {
+  return moment(date).diff(FIRST_DAY, "days");
+}
+
+// Get the date from a given index
+export function getDayByIndex(index) {
+  return moment(FIRST_DAY).add(index, "days").toDate();
+}
+
+// Return true if index is after 0 and before today's index
+export function isValidIndex(index) {
+  return index >= 0 && index < getDay();
+}
+
+// Return true if date is after FIRST_DAY and before today
+export function isValidDate(date) {
+  return isValidIndex(getDayDiff(date));
+}
+
+// Return the first incomplete day for the archive
+export function getLatestIncompleteIndex(listName) {
+  let idx = 0;
+  let archivedCompleted = getListData(listName, false);
+
+  if (archivedCompleted && archivedCompleted.completed) {
+    let found = false;
+    while (!found && idx < getDay()) {
+      if (archivedCompleted.completed.includes(idx)) {
+        idx++;
+      } else {
+        found = true;
+      }
+    }
+  }
+  return idx;
+}
+
 export function getWordList(listName) {
-  if (listName === "sevens") {
+  if (listName.includes("sevens")) {
     return shuffled_sevens;
-  } else if (listName === "eights") {
+  } else if (listName.includes("eights")) {
     return random_eights;
   }
   // TODO: add more lists
@@ -72,27 +111,12 @@ export function getListData(listName, returnWords) {
 // Returns - JSON object containing word and index in list
 export function getWord(listName, useArchive) {
   let list = getWordList(listName);
-  let idx = getDay();
-
-  // If useArchive is true, return the earliest non-completed word
-  if (useArchive) {
-    idx = 0;
-    let archivedCompleted = getListData(listName, false);
-    if (archivedCompleted && archivedCompleted.completed) {
-      let found = false;
-      while (!found && idx < getDay()) {
-        if (archivedCompleted.completed.includes(idx)) {
-          idx++;
-        } else {
-          found = true;
-        }
-      }
-    }
-  }
+  let idx = useArchive ? getLatestIncompleteIndex() : getDay();
 
   // Eights handling since they are more complex
   if (listName.includes("eights")) {
     const listKeys = Object.keys(list);
+    // In case somehow the eights list is not long enough
     if (idx > listKeys.length) {
       idx = idx % listKeys.length;
     }
@@ -103,9 +127,10 @@ export function getWord(listName, useArchive) {
     let wordObj = { ...wordOptions[random] };
 
     if (wordObj.INDEX < 0) {
-      random = getRandomizedIndex(listKeys[idx], 8);
+      random = getRandomizedIndex(listKeys[idx], 8, true);
       wordObj.INDEX = random;
       wordObj.LETTER = listKeys[idx].charAt(random);
+      wordObj.ALPHA = wordObj.ALPHA.replace(wordObj.LETTER, "");
     }
 
     return {
@@ -124,21 +149,58 @@ export function getWord(listName, useArchive) {
   };
 }
 
-function getRandomizedIndex(word, maxLength) {
+// Add up unicode values of given word and divide it by its length
+function getRandomizedIndex(word, maxLength, excludeEnds = false) {
   let count = 0;
+
   for (let i = 0; i < word.length; i++) {
     count += word.charCodeAt(i);
+  }
+
+  // We don't want to get the first or last indexes (i.e. 0 or 7 for eights)
+  // For picking the index of an 8 letter word
+  if (excludeEnds) {
+    return (count % (maxLength - 2)) + 1;
   }
   return count % maxLength;
 }
 
 // For archived retrieval of past words
 export function getWordByIndex(listName, index) {
-  // Cannot request words in the future
-  if (index > getDay()) {
-    return null;
+  // Cannot request words past the the previous day or earlier than the first day
+  if (!isValidIndex(index)) {
+    return;
   }
   let list = getWordList(listName);
+
+  // Eights handling since they are more complex
+  if (listName.includes("eights")) {
+    const listKeys = Object.keys(list);
+    // In case somehow the eights list is not long enough
+    if (index > listKeys.length) {
+      index = index % listKeys.length;
+    }
+    // Get array of possible puzzle options for the given word
+    const wordOptions = list[listKeys[index]];
+    // Generate an index based on the word's unicode composition
+    let random = getRandomizedIndex(listKeys[index], wordOptions.length);
+    let wordObj = { ...wordOptions[random] };
+
+    if (wordObj.INDEX < 0) {
+      random = getRandomizedIndex(listKeys[index], 8, true);
+      wordObj.INDEX = random;
+      wordObj.LETTER = listKeys[index].charAt(random);
+      wordObj.ALPHA = wordObj.ALPHA.replace(wordObj.LETTER, "");
+    }
+
+    return {
+      index: index,
+      word: listKeys[index],
+      alpha: wordObj.ALPHA,
+      letter: wordObj.LETTER,
+      letterIndex: wordObj.INDEX,
+    };
+  }
   return {
     index: index,
     word: list[index],

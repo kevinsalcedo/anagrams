@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import {
+  getDayDiff,
   getWord,
+  getWordByIndex,
   isWordCompleted,
   markWordCompleted,
+  getLatestIncompleteIndex,
+  isValidDate,
+  isValidIndex,
 } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
@@ -10,149 +15,191 @@ import {
   GUESS_INCORRECT,
   GUESS_INVALID,
   ARCHIVE_NEXT,
+  ARCHIVE_END,
 } from "../assets/alertMessages";
 import { getGameSettings } from "../utils/settingsUtils";
 import PageTitle from "./layout/PageTitle";
 import SoftKeyboard from "./SoftKeyboard";
 import TileDisplay from "./layout/TileDisplay";
+import DateSelector from "./DateSelector";
+import SubmitButton from "./SubmitButton";
 
 function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Game state
-  const [answer, setAnswer] = useState(null);
-  const [solved, setSolved] = useState(false);
-  const [guessString, setGuessString] = useState("");
-  // Conditional to clear entire word on incorrect guess
-  const [clearWord, setClearWord] = useState(false);
+  const [gameState, setGameState] = useState({
+    answer: null,
+    solved: false,
+    guessString: "",
+    dateIndex: -1,
+  });
+
   const [gameSettings, setGameSettings] = useState(null);
+  const { dateIndex, solved, guessString, answer } = gameState;
 
-  // Load in the word of the day
+  // On game change, initialize game settings and game state
   useEffect(() => {
-    initWord();
-  }, [game, isArchive, title]);
-
-  function initWord() {
-    // Initialize game settings
     const gameSettings = getGameSettings(game);
     setGameSettings((prev) => gameSettings);
+    // Initialize
+    updateGameState(gameState, true);
+  }, [game, isArchive]);
 
-    // Initialize game state
-    const word = getWord(game, isArchive);
-    if (word) {
-      const completed = isWordCompleted(game, word.index);
-      setAnswer((prev) => word);
-      setSolved((prev) => completed);
-      setGuessString((prev) => (completed ? word.word : ""));
+  function updateGameState(stateObj, switchGame) {
+    const newState = { ...stateObj };
+    // Reinitialize game state on date change
+    if (switchGame || newState.dateIndex !== gameState.dateIndex) {
+      let idx = getLatestIncompleteIndex(game);
+      if (switchGame) {
+        newState.dateIndex = idx;
+      } else {
+        idx = newState.dateIndex;
+      }
+
+      let word = isArchive ? getWordByIndex(game, idx) : getWord(game, false);
+      if (word) {
+        const completed = isWordCompleted(game, word.index);
+        newState.answer = word;
+        newState.solved = completed;
+        newState.guessString = completed ? word.word : "";
+      }
     }
+    setGameState(newState);
   }
 
   // First render, before answer is retrieved
-  if (!answer) {
+  if (!gameSettings || !gameState.answer) {
     return <div>Loading..</div>;
   }
 
   // Handler for submitting a guess with the Enter key
   function handleSubmit() {
-    const guess = guessString;
+    let newState = { ...gameState };
+
+    let msg = GUESS_INCORRECT;
+    let type = "danger";
+
     // Use has not filled in entire guess
     if (guessString.length !== answer.word.length) {
-      toggleToast(true, GUESS_INCOMPLETE, "warning");
-      return;
+      msg = GUESS_INCOMPLETE;
+      type = "warning";
     }
 
     // Correct answer
-    if (guess === answer.word) {
-      setSolved(true);
+    else if (guessString === answer.word) {
+      // setSolved(true);
+      newState.solved = true;
       markWordCompleted(game, answer.index);
-
-      toggleToast(true, isArchive ? ARCHIVE_NEXT : GUESS_SUCCESS, "success");
-      // If in archive mode, then let the user clear the word on next input
-      setClearWord(isArchive);
-      return;
+      msg = GUESS_SUCCESS;
+      if (isArchive) {
+        msg = isValidIndex(dateIndex + 1) ? ARCHIVE_NEXT : ARCHIVE_END;
+      }
+      type = "success";
     }
 
     // Incorrect characters used
-    if (
-      guess.split("").sort().join("") !== answer.word.split("").sort().join("")
+    else if (
+      guessString.split("").sort().join("") !==
+      answer.word.split("").sort().join("")
     ) {
-      toggleToast(true, GUESS_INVALID, "danger");
-      setClearWord(true);
-
-      return;
+      msg = GUESS_INVALID;
     }
 
-    // Incorrect guess
-    toggleToast(true, GUESS_INCORRECT, "danger");
-    setClearWord(true);
+    updateGameState(newState);
+    toggleToast(true, msg, type);
   }
 
   // Set the guess based on physical and virtual keyboard input
   function handleInput(character) {
+    const newState = { ...gameState };
+    let newGuess = "";
+
     if (solved && !isArchive) {
       return;
     }
-    toggleToast(false);
 
     const pattern = /^[a-zA-Z]$/;
-    if (character === "{backspace}") {
-      setGuessString((prev) => {
-        if (prev.length > 0 && !clearWord) {
-          // [Eights Mode] Ignore the given character
-          if (
-            game.includes("eight") &&
-            prev.length === answer.letterIndex + 1
-          ) {
-            return prev.substring(0, prev.length - 2);
+    // Character A-Z entered
+    if (pattern.test(character)) {
+      if (solved) {
+        return;
+      }
+      if (guessString.length < answer.word.length) {
+        // [Eights Mode] If a different character, append. If same, act as if you added it
+        if (
+          game.includes("eight") &&
+          guessString.length === answer.letterIndex
+        ) {
+          if (character.toUpperCase() !== answer.letter) {
+            newGuess = guessString + answer.letter + character.toUpperCase();
           }
-          return prev.substring(0, prev.length - 1);
         }
-        return "";
-      });
-      setClearWord(false);
-    }
-    if (character === "{enter}") {
-      if (solved || clearWord) {
-        // We only get here if isArchive is true
-        initWord();
-        setClearWord(false);
-      } else {
-        handleSubmit();
+        newGuess = guessString + character.toUpperCase();
+        newState.guessString = newGuess;
       }
     }
-    if (pattern.test(character)) {
-      setGuessString((prev) => {
-        if (prev.length < answer.word.length) {
-          // [Eights Mode] If a different character, append. If same, act as if you added it
-          if (game.includes("eight") && prev.length === answer.letterIndex) {
-            if (character.toUpperCase() !== answer.letter) {
-              return prev + answer.letter + character.toUpperCase();
-            }
-          }
-          return prev + character.toUpperCase();
+
+    // Backspace hit
+    if (character === "{backspace}") {
+      if (solved) {
+        return;
+      }
+      if (guessString.length > 0) {
+        if (
+          game.includes("eight") &&
+          guessString.length === answer.letterIndex + 1
+        ) {
+          newGuess = guessString.substring(0, guessString.length - 2);
         }
-        if (clearWord) {
-          setClearWord(false);
-          return character.toUpperCase();
-        }
-        return prev;
-      });
+        newGuess = guessString.substring(0, guessString.length - 1);
+      }
+      newState.guessString = newGuess;
     }
+
+    // Submit the form on enter
+    if (character === "{enter}" && !solved) {
+      handleSubmit();
+    } else {
+      // Move to next word - set the date before changing the game state
+      if (character === "{enter}" && solved) {
+        if (isValidIndex(dateIndex + 1)) {
+          newState.dateIndex = dateIndex + 1;
+        }
+      }
+      updateGameState(newState);
+    }
+  }
+
+  // Setter for the datepicker
+  function handleDateChange(date) {
+    let dayDiff = getDayDiff(date);
+    if (!isValidDate(date)) {
+      return;
+    }
+    updateGameState({ ...gameState, dateIndex: dayDiff });
   }
 
   return (
     <>
-      <div id='contentRow' className='row justify-content-center mt-auto mb-2'>
-        <PageTitle
-          title={title}
-          subtitle={game}
-          date={isArchive ? answer.index : null}
-        />
-        <div
-          id='tilesRow'
-          className='row px-0 mb-auto gy-2 justify-content-center'
-        >
+      <div
+        id='contentRow'
+        className='row justify-content-center flex-grow-1 mb-2'
+      >
+        <PageTitle title={title} subtitle={game} />
+        <div id='tilesRow' className='row px-0 mb-auto justify-content-center'>
+          {isArchive && (
+            <DateSelector dateIndex={dateIndex} setDate={handleDateChange} />
+          )}
           <TileDisplay
-            size={gameSettings.WORD_SIZE}
-            word={answer.word.split("").sort().join("")}
+            size={
+              game.includes("eight") && answer.alpha
+                ? 7
+                : gameSettings.WORD_SIZE
+            }
+            word={
+              game.includes("eight") && answer.alpha
+                ? answer.alpha
+                : answer.word.split("").sort().join("")
+            }
             readOnly
             handleTap={handleInput}
           />
@@ -163,16 +210,13 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
             fillLetter={game.includes("eight") ? answer.letter : null}
             fillIndex={game.includes("eight") ? answer.letterIndex : null}
           />
-          {isArchive && solved && (
-            <button
-              className={`btn ${
-                solved ? "bg-success bg-opacity-75" : "btn-secondary"
-              }`}
-              onClick={() => initWord()}
-              style={{ width: "5rem" }}
-            >
-              {solved ? "Next" : "Skip"}
-            </button>
+          {isArchive && (
+            <SubmitButton
+              solved={solved}
+              dateIndex={dateIndex}
+              handleDateChange={handleDateChange}
+              handleSubmit={handleSubmit}
+            />
           )}
         </div>
       </div>

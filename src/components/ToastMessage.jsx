@@ -8,7 +8,7 @@ function ToastMessage({ visible, setVisible, msg, type }) {
     var myToast = toastRef.current;
     var bsToast = Toast.getInstance(myToast);
     if (!bsToast) {
-      bsToast = new Toast(myToast, { delay: 10000 });
+      bsToast = new Toast(myToast, { delay: 2000 });
       bsToast.hide();
       setVisible(false);
     } else {
@@ -18,7 +18,7 @@ function ToastMessage({ visible, setVisible, msg, type }) {
 
   return (
     <div className='row justify-content-center'>
-      <div className='position-fixed mt=5 d-flex justify-content-center py-2'>
+      <div className='position-absolute mt=5 d-flex justify-content-center py-2'>
         <div
           className={`toast align-items-center text-white bg-${type} border-0`}
           role='alert'

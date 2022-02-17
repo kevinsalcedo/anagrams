@@ -8,7 +8,7 @@ function MainNav({ setGame }) {
     setCollapsed((prev) => true);
   }
   return (
-    <nav className='nav-fixed-top w-100 navbar navbar-expand-lg navbar-light bg-light'>
+    <nav className='w-100 navbar navbar-expand-lg navbar-light bg-light'>
       <div className='container-fluid'>
         <button
           className={`navbar-toggler ${collapsed ? "collapsed" : ""}`}
@@ -22,6 +22,7 @@ function MainNav({ setGame }) {
         <div
           className='offcanvas offcanvas-start'
           tabIndex='-1'
+          z-index='10000'
           id='offcanvasNavbar'
         >
           <div className='offcanvas-header'>
@@ -39,6 +40,7 @@ function MainNav({ setGame }) {
             <ul className='navbar-nav justify-content-start pe-3'>
               <li className='nav-item '>
                 <button
+                  tabIndex='-1'
                   className='btn nav-link'
                   data-bs-dismiss='offcanvas'
                   onClick={() => toggleGame("sevens")}
@@ -48,6 +50,7 @@ function MainNav({ setGame }) {
               </li>
               <li className='nav-item'>
                 <button
+                  tabIndex='-1'
                   className='btn nav-link'
                   data-bs-dismiss='offcanvas'
                   onClick={() => toggleGame("eights")}
@@ -57,18 +60,42 @@ function MainNav({ setGame }) {
               </li>
               <li className='nav-item'>
                 <button
-                  className='btn nav-link'
-                  data-bs-dismiss='offcanvas'
-                  onClick={() => toggleGame("archived-sevens")}
+                  tabIndex='-1'
+                  className='btn nav-link dropdown-toggle'
+                  data-bs-toggle='dropdown'
+                  aria-expanded='false'
                 >
-                  Archive
+                  Archives
                 </button>
+                <ul className='dropdown-menu'>
+                  <li>
+                    <button
+                      tabIndex='-1'
+                      className='dropdown-item btn nav-link'
+                      data-bs-dismiss='offcanvas'
+                      onClick={() => toggleGame("archived-sevens")}
+                    >
+                      Sevens
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      tabIndex='-1'
+                      className='dropdown-item btn nav-link'
+                      data-bs-dismiss='offcanvas'
+                      onClick={() => toggleGame("archived-eights")}
+                    >
+                      Eights
+                    </button>
+                  </li>
+                </ul>
               </li>
             </ul>
           </div>
         </div>
         <button
           type='button'
+          tabIndex='-1'
           className='btn btn-secondary d-flex justify-content-center'
           data-bs-toggle='modal'
           data-bs-target='#settingsModal'

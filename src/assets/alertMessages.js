@@ -12,3 +12,6 @@ export const ARCHIVE_SKIP =
 
 export const ARCHIVE_NEXT =
   "Well done! Press next or hit Enter to move on to the next word.";
+
+export const ARCHIVE_END =
+  "Well done! You completed the most recent anagram. Click the date to select an older one.";

@@ -74,10 +74,14 @@ body,
   height: 3.5rem;
 }
 
-.nav-fixed-top {
+.react-datepicker-wrapper,
+.react-datepicker-wrapper div {
+  width: 10rem;
+  height: 100%;
+}
+
+.react-datepicker__input-container > div {
   display: flex;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  align-items: center;
+  justify-content: center;
 }
