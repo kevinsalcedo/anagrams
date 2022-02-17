@@ -1,6 +1,12 @@
 import { isValidIndex, getDayByIndex } from "../utils/wordUtils";
 
-function SubmitButton({ solved, dateIndex, handleDateChange, handleSubmit }) {
+function SubmitButton({
+  isArchive,
+  solved,
+  dateIndex,
+  handleDateChange,
+  handleSubmit,
+}) {
   function handleClick() {
     if (solved) {
       handleDateChange(getDayByIndex(dateIndex + 1));
@@ -15,10 +21,10 @@ function SubmitButton({ solved, dateIndex, handleDateChange, handleSubmit }) {
       } text-white`}
       onClick={() => handleClick()}
       style={{ width: "5rem" }}
-      disabled={!isValidIndex(dateIndex + 1)}
+      disabled={(solved && !isArchive) || !isValidIndex(dateIndex + 1)}
       tabIndex='-1'
     >
-      {solved ? "Next" : "Submit"}
+      {isArchive && solved ? "Next" : "Submit"}
     </button>
   );
 }

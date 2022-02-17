@@ -125,15 +125,20 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       }
       if (guessString.length < answer.word.length) {
         // [Eights Mode] If a different character, append. If same, act as if you added it
+
         if (
           game.includes("eight") &&
           guessString.length === answer.letterIndex
         ) {
+          console.log(character);
           if (character.toUpperCase() !== answer.letter) {
             newGuess = guessString + answer.letter + character.toUpperCase();
+          } else {
+            newGuess = guessString + answer.letter;
           }
+        } else {
+          newGuess = guessString + character.toUpperCase();
         }
-        newGuess = guessString + character.toUpperCase();
         newState.guessString = newGuess;
       }
     }
@@ -149,8 +154,9 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
           guessString.length === answer.letterIndex + 1
         ) {
           newGuess = guessString.substring(0, guessString.length - 2);
+        } else {
+          newGuess = guessString.substring(0, guessString.length - 1);
         }
-        newGuess = guessString.substring(0, guessString.length - 1);
       }
       newState.guessString = newGuess;
     }
@@ -210,14 +216,14 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
             fillLetter={game.includes("eight") ? answer.letter : null}
             fillIndex={game.includes("eight") ? answer.letterIndex : null}
           />
-          {isArchive && (
-            <SubmitButton
-              solved={solved}
-              dateIndex={dateIndex}
-              handleDateChange={handleDateChange}
-              handleSubmit={handleSubmit}
-            />
-          )}
+
+          <SubmitButton
+            isArchive={isArchive}
+            solved={solved}
+            dateIndex={dateIndex}
+            handleDateChange={handleDateChange}
+            handleSubmit={handleSubmit}
+          />
         </div>
       </div>
       <SoftKeyboard
