@@ -6,7 +6,7 @@ body,
 
 @font-face {
   font-family: "JopertV2";
-  src: local("JopertV2"), url(./fonts/JopertV2-Regular.ttf) format("truetype");
+  src: local("JopertV2"), url(./fonts/Jopert_v31-Regular.otf) format("opentype");
 }
 
 .main-wrapper {
@@ -78,6 +78,7 @@ body,
 .react-datepicker-wrapper div {
   width: 10rem;
   height: 100%;
+  font-family: "JopertV2";
 }
 
 .react-datepicker__input-container > div {

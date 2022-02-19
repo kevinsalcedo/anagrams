@@ -33,7 +33,7 @@ function GameTile({
       }}
       onKeyDown={(e) => e.preventDefault()}
     >
-      {<p className={`m-0  ${!solved ? "h3" : "h2"}`}>{value}</p>}
+      {<p className={`m-0 ${!solved ? "h3" : "h2"}`}>{value}</p>}
     </button>
   );
 }

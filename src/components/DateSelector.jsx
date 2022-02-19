@@ -43,13 +43,13 @@ function DateSelector({ dateIndex, setDate }) {
           />
         </svg>{" "}
       </button>
-      <div className='btn btn-outline-primary  p-0'>
+      <div className='btn btn-outline-primary p-0'>
         <DatePicker
           selected={date}
           onChange={(newDate) => setDate(newDate)}
           minDate={FIRST_DAY.toDate()}
           maxDate={getDayByIndex(getDay() - 1)}
-          dateFormat='MMMM dd, yyyy'
+          dateFormat='MM/dd/yyyy'
           customInput={<ExampleCustomInput />}
         />
       </div>

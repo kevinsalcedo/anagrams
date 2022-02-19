@@ -58,7 +58,7 @@ function MainNav({ setGame }) {
                   Eights
                 </button>
               </li>
-              <li className='nav-item btn-group'>
+              <li className='nav-item dropdown'>
                 <button
                   tabIndex='-1'
                   className='btn nav-link dropdown-toggle'
