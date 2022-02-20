@@ -63,6 +63,9 @@ const GAME_SETTINGS = {
   eights: {
     WORD_SIZE: 8,
   },
+  nines: {
+    WORD_SIZE: 9,
+  },
 };
 
 const ARCHIVED_PREFIX = "archived-";

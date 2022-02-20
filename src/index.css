@@ -5,8 +5,8 @@ body,
 }
 
 @font-face {
-  font-family: "JopertV2";
-  src: local("JopertV2"), url(./fonts/Jopert_v31-Regular.otf) format("opentype");
+  font-family: "Jopert";
+  src: local("Jopert"), url(./fonts/Jopert_v5-Regular.ttf) format("truetype");
 }
 
 .main-wrapper {
@@ -15,7 +15,7 @@ body,
 }
 
 .page-title {
-  font-family: "JopertV2";
+  font-family: "Jopert";
 }
 
 .letter-tile {
@@ -30,7 +30,7 @@ body,
   caret-color: transparent;
   color: black;
   cursor: default !important;
-  font-family: "JopertV2";
+  font-family: "Jopert";
 }
 .letter-tile-filled {
   background-color: #c5c5c5;
@@ -61,7 +61,7 @@ body,
 }
 
 .simple-keyboard {
-  font-family: "JopertV2";
+  font-family: "Jopert";
 }
 
 @media (max-width: 600px) {
@@ -78,11 +78,23 @@ body,
 .react-datepicker-wrapper div {
   width: 10rem;
   height: 100%;
-  font-family: "JopertV2";
+  font-family: "Jopert";
 }
 
 .react-datepicker__input-container > div {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.date-btn {
+  color: rgb(61, 61, 211);
+  border-color: rgb(61, 61, 211);
+}
+.date-btn:hover {
+  background-color: rgb(61, 61, 211);
+}
+
+.bi-circle {
+  color: white;
 }

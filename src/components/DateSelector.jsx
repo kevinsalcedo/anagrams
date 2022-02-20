@@ -25,7 +25,7 @@ function DateSelector({ dateIndex, setDate }) {
       <button
         type='button'
         tabIndex='-1'
-        className='btn btn-outline-primary  d-flex justify-content-center align-items-center'
+        className='date-btn btn btn-outline-primary  d-flex justify-content-center align-items-center'
         onClick={() => setDate(getDayByIndex(dateIndex - 1))}
         disabled={!isValidIndex(dateIndex - 1)}
       >
@@ -43,7 +43,7 @@ function DateSelector({ dateIndex, setDate }) {
           />
         </svg>{" "}
       </button>
-      <div className='btn btn-outline-primary p-0'>
+      <div className='date-btn btn btn-outline-primary p-0'>
         <DatePicker
           selected={date}
           onChange={(newDate) => setDate(newDate)}
@@ -57,7 +57,7 @@ function DateSelector({ dateIndex, setDate }) {
       <button
         type='button'
         tabIndex='-1'
-        className='btn btn-outline-primary  d-flex justify-content-center align-items-center'
+        className='date-btn btn btn-outline-primary  d-flex justify-content-center align-items-center'
         onClick={() => setDate(getDayByIndex(dateIndex + 1))}
         disabled={!isValidIndex(dateIndex + 1)}
       >
@@ -66,7 +66,7 @@ function DateSelector({ dateIndex, setDate }) {
           width='16'
           height='16'
           fill='currentColor'
-          className='bi bi-arrow-right'
+          className='bi bi-chevron-double-right'
           viewBox='0 0 16 16'
         >
           <path

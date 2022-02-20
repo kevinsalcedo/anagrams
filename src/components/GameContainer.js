@@ -197,12 +197,12 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
           )}
           <TileDisplay
             size={
-              game.includes("eight") && answer.alpha
+              game.includes("eight") && answer.alpha.length === 7
                 ? 7
                 : gameSettings.WORD_SIZE
             }
             word={
-              game.includes("eight") && answer.alpha
+              answer.alpha
                 ? answer.alpha
                 : answer.word.split("").sort().join("")
             }

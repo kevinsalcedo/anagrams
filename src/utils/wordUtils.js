@@ -1,9 +1,10 @@
-import { shuffled_sevens } from "../assets/shuffled_sevens";
-import { random_eights } from "../assets/random_eights";
+import { seven_hints } from "../assets/seven_hints";
+import { eights_hints } from "../assets/eight_hints";
+import { nine_hints } from "../assets/nine_hints";
 import moment from "moment";
 
 // TODO: Set to be the launch day
-export const FIRST_DAY = moment([2022, 0, 15]);
+export const FIRST_DAY = moment([2022, 0, 1]);
 
 // Get the current day's index
 export function getDay() {
@@ -49,14 +50,17 @@ export function getLatestIncompleteIndex(listName) {
   return idx;
 }
 
+// Return the list based on the listname given
 export function getWordList(listName) {
   if (listName.includes("sevens")) {
-    return shuffled_sevens;
+    return seven_hints;
   } else if (listName.includes("eights")) {
-    return random_eights;
+    return eights_hints;
+  } else if (listName.includes("nines")) {
+    return nine_hints;
   }
   // TODO: add more lists
-  return shuffled_sevens;
+  return [];
 }
 
 function saveData(allData) {
@@ -115,54 +119,23 @@ export function getWord(listName, useArchive) {
 
   // Eights handling since they are more complex
   if (listName.includes("eights")) {
-    const listKeys = Object.keys(list);
-    // In case somehow the eights list is not long enough
-    if (idx > listKeys.length) {
-      idx = idx % listKeys.length;
-    }
-    // Get array of possible puzzle options for the given word
-    const wordOptions = list[listKeys[idx]];
-    // Generate an index based on the word's unicode composition
-    let random = getRandomizedIndex(listKeys[idx], wordOptions.length);
-    let wordObj = { ...wordOptions[random] };
-
-    if (wordObj.INDEX < 0) {
-      random = getRandomizedIndex(listKeys[idx], 8, true);
-      wordObj.INDEX = random;
-      wordObj.LETTER = listKeys[idx].charAt(random);
-      wordObj.ALPHA = wordObj.ALPHA.replace(wordObj.LETTER, "");
-    }
-
     return {
       index: idx,
-      word: listKeys[idx],
-      alpha: wordObj.ALPHA.replace(wordObj.LETTER, ""),
-      letter: wordObj.LETTER,
-      letterIndex: wordObj.INDEX,
+      word: list[idx].WORD,
+      alpha: list[idx].ALPHA,
+      letter: list[idx].LETTER,
+      letterIndex: list[idx].INDEX,
+      hints: list[idx].HINTS,
     };
   }
 
   // Return object with index + word so that it can be marked complete
   return {
     index: idx,
-    word: list[idx],
+    word: list[idx].WORD,
+    alpha: list[idx].ALPHA,
+    hints: list[idx].HINTS,
   };
-}
-
-// Add up unicode values of given word and divide it by its length
-function getRandomizedIndex(word, maxLength, excludeEnds = false) {
-  let count = 0;
-
-  for (let i = 0; i < word.length; i++) {
-    count += word.charCodeAt(i);
-  }
-
-  // We don't want to get the first or last indexes (i.e. 0 or 7 for eights)
-  // For picking the index of an 8 letter word
-  if (excludeEnds) {
-    return (count % (maxLength - 2)) + 1;
-  }
-  return count % maxLength;
 }
 
 // For archived retrieval of past words
@@ -175,35 +148,20 @@ export function getWordByIndex(listName, index) {
 
   // Eights handling since they are more complex
   if (listName.includes("eights")) {
-    const listKeys = Object.keys(list);
-    // In case somehow the eights list is not long enough
-    if (index > listKeys.length) {
-      index = index % listKeys.length;
-    }
-    // Get array of possible puzzle options for the given word
-    const wordOptions = list[listKeys[index]];
-    // Generate an index based on the word's unicode composition
-    let random = getRandomizedIndex(listKeys[index], wordOptions.length);
-    let wordObj = { ...wordOptions[random] };
-
-    if (wordObj.INDEX < 0) {
-      random = getRandomizedIndex(listKeys[index], 8, true);
-      wordObj.INDEX = random;
-      wordObj.LETTER = listKeys[index].charAt(random);
-      wordObj.ALPHA = wordObj.ALPHA.replace(wordObj.LETTER, "");
-    }
-
     return {
       index: index,
-      word: listKeys[index],
-      alpha: wordObj.ALPHA,
-      letter: wordObj.LETTER,
-      letterIndex: wordObj.INDEX,
+      word: list[index].WORD,
+      alpha: list[index].ALPHA,
+      letter: list[index].LETTER,
+      letterIndex: list[index].INDEX,
+      hints: list[index].HINTS,
     };
   }
   return {
     index: index,
-    word: list[index],
+    word: list[index].WORD,
+    alpha: list[index].ALPHA,
+    hints: list[index].HINTS,
   };
 }
 

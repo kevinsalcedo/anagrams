@@ -58,6 +58,16 @@ function MainNav({ setGame }) {
                   Eights
                 </button>
               </li>
+              <li className='nav-item'>
+                <button
+                  tabIndex='-1'
+                  className='btn nav-link'
+                  data-bs-dismiss='offcanvas'
+                  onClick={() => toggleGame("nines")}
+                >
+                  Nines
+                </button>
+              </li>
               <li className='nav-item dropdown'>
                 <button
                   tabIndex='-1'
@@ -86,6 +96,16 @@ function MainNav({ setGame }) {
                       onClick={() => toggleGame("archived-eights")}
                     >
                       Eights
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      tabIndex='-1'
+                      className='dropdown-item btn nav-link'
+                      data-bs-dismiss='offcanvas'
+                      onClick={() => toggleGame("archived-nines")}
+                    >
+                      Nines
                     </button>
                   </li>
                 </ul>

@@ -1,7 +1,7 @@
 import GameTile from "./GameTile";
 
 function TileDisplay({
-  size,
+  size = 7,
   word,
   solved,
   readOnly,
