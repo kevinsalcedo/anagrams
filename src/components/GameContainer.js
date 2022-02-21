@@ -60,6 +60,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       }
       let word = isArchive ? getWordByIndex(game, idx) : getWord(game, false);
       if (word) {
+        newState.displayedHints = getDisplayedHintsForWord(game, word.index);
         const completed = isWordCompleted(game, word.index);
         newState.answer = word;
         newState.solved = completed;

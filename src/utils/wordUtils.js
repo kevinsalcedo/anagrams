@@ -108,6 +108,7 @@ export function getListData(listName, returnWords) {
   // Return list of actual completed words, and number of attempts
   return {
     completed: returnWords ? completedWords : listData.completed,
+    hints: listData.hints,
   };
 }
 
@@ -172,7 +173,11 @@ export function isWordCompleted(listName, index) {
 
 export function getDisplayedHintsForWord(listName, index) {
   const data = getListData(listName, false).hints;
-  return data[index];
+  if (data && data[index]) {
+    return data[index];
+  }
+
+  return [];
 }
 
 // Save index and number of attempts of completed anagram to given list

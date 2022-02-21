@@ -6,6 +6,7 @@ function GameTile({
   handleTap,
   immutable,
   className,
+  disabled = false,
 }) {
   let styles = "";
   if (value !== " " && !solved) {
@@ -32,6 +33,7 @@ function GameTile({
           handleTap(value);
         }
       }}
+      disabled={disabled}
       onKeyDown={(e) => e.preventDefault()}
     >
       {<p className={`m-0 ${!solved ? "h3" : "h2"}`}>{value}</p>}

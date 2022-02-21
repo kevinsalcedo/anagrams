@@ -58,6 +58,7 @@ body,
 
 .tile-hidden {
   background-color: rgb(51, 51, 51);
+  cursor: default !important;
 }
 
 .simple-keyboard {

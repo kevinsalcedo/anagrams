@@ -29,6 +29,7 @@ function AlphaDisplay({ alpha, handleTap, userGuess }) {
             index={index}
             handleTap={handleTap}
             readOnly
+            disabled={hiddenIndexList.includes(index)}
           />
         );
       })}
