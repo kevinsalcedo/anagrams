@@ -10,7 +10,7 @@ export function getUserPreferences() {
   }
 
   anagramSettings = {
-    easyMode: true,
+    easyMode: false,
     theme: "light",
   };
 
@@ -28,12 +28,10 @@ export function isEasyMode() {
   return false;
 }
 
-export function toggleEasyMode() {
+export function setEasyMode(val) {
   let settings = { ...getUserPreferences() };
 
-  settings["easyMode"] = settings.hasOwnProperty("easyMode")
-    ? !settings["easyMode"]
-    : false;
+  settings["easyMode"] = val;
   saveUserPreferences(settings);
 }
 

@@ -1,11 +1,17 @@
 // import { SettingsContext } from "./SettingsContext";
-// import { useContext } from "react";
+import { useState } from "react";
+import { isEasyMode, setEasyMode } from "../utils/settingsUtils";
 
 import { resetAllData, resetDataForList } from "../utils/wordUtils";
 
 function SettingsModal() {
   // const { settings, toggleEasyMode, toggleTheme } = useContext(SettingsContext);
+  const [isHints, toggleHints] = useState(isEasyMode());
 
+  function toggleMode() {
+    setEasyMode(!isHints);
+    toggleHints((prev) => !prev);
+  }
   return (
     <div
       className='modal fade'
@@ -28,7 +34,23 @@ function SettingsModal() {
             ></button>
           </div>
           <div className='modal-body'>
-            <div className='container d-flex mx-auto flex-column'>
+            <div className='container d-flex mx-auto  flex-column w-50'>
+              <div className='form-check form-switch'>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  role='switch'
+                  id='flexSwitchCheckDefault'
+                  checked={isHints}
+                  onChange={() => toggleMode()}
+                />
+                <label
+                  className='form-check-label'
+                  htmlFor='flexSwitchCheckDefault'
+                >
+                  Enable Hints
+                </label>
+              </div>{" "}
               <button
                 className='btn bg-danger text-white dropdown-toggle'
                 data-bs-toggle='dropdown'

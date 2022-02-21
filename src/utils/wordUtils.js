@@ -92,6 +92,8 @@ export function getListData(listName, returnWords) {
   if (!listData) {
     const newListData = {
       completed: [],
+      hints: {},
+      skipped: [],
     };
     listData = newListData;
     data[listName] = newListData;
@@ -109,6 +111,7 @@ export function getListData(listName, returnWords) {
   return {
     completed: returnWords ? completedWords : listData.completed,
     hints: listData.hints,
+    skipped: listData.skipped,
   };
 }
 
@@ -168,7 +171,26 @@ export function getWordByIndex(listName, index) {
 
 export function isWordCompleted(listName, index) {
   const data = getListData(listName, false).completed;
-  return data.includes(index);
+  return data && data.includes(index);
+}
+
+export function isWordSkipped(listName, index) {
+  const data = getListData(listName, false).skipped;
+  return data && data.includes(index);
+}
+
+export function saveHintsForWord(listName, index, hints) {
+  let listData = getListData(listName, false);
+
+  let newListData = { ...listData };
+
+  if (!newListData.hints) {
+    newListData.hints = {};
+  }
+  newListData.hints[index] = hints;
+  let newData = { ...getSavedData() };
+  newData[listName] = newListData;
+  saveData(newData);
 }
 
 export function getDisplayedHintsForWord(listName, index) {
@@ -180,12 +202,27 @@ export function getDisplayedHintsForWord(listName, index) {
   return [];
 }
 
+export function markWordSkipped(listName, index) {
+  const listData = getListData(listName, false);
+  let newListData = {
+    ...listData,
+    skipped: [...listData.skipped, index],
+  };
+
+  let newData = {
+    ...getSavedData(),
+  };
+  newData[listName] = newListData;
+  saveData(newData);
+}
+
 // Save index and number of attempts of completed anagram to given list
 // Returns - nothing
 export function markWordCompleted(listName, index, displayedHints) {
   const listData = getListData(listName, false);
 
   let newListData = {
+    ...listData,
     completed: [...listData.completed, index],
     hints: { ...listData.hints },
   };
@@ -208,6 +245,8 @@ export function resetAllData() {
 export function resetDataForList(listName) {
   let newListData = {
     completed: [],
+    hints: {},
+    skipped: [],
   };
 
   let newData = {

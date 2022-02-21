@@ -9,6 +9,9 @@ import {
   isValidDate,
   isValidIndex,
   getDisplayedHintsForWord,
+  saveHintsForWord,
+  markWordSkipped,
+  isWordSkipped,
 } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
@@ -18,7 +21,7 @@ import {
   ARCHIVE_NEXT,
   ARCHIVE_END,
 } from "../assets/alertMessages";
-import { getGameSettings } from "../utils/settingsUtils";
+import { getGameSettings, isEasyMode } from "../utils/settingsUtils";
 import PageTitle from "./layout/PageTitle";
 import SoftKeyboard from "./SoftKeyboard";
 import TileInput from "./layout/TileInput";
@@ -26,6 +29,7 @@ import DateSelector from "./DateSelector";
 import SubmitButton from "./SubmitButton";
 import AlphaDisplay from "./layout/AlphaDisplay";
 import HintButton from "./HintButton";
+import ConfirmModal from "./ConfirmModal";
 
 function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Game state
@@ -35,10 +39,12 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     userGuess: [],
     dateIndex: -1,
     displayedHints: [],
+    skipped: false,
   });
 
   const [gameSettings, setGameSettings] = useState(null);
-  const { dateIndex, solved, userGuess, answer, displayedHints } = gameState;
+  const { dateIndex, solved, skipped, userGuess, answer, displayedHints } =
+    gameState;
 
   // On game change, initialize game settings and game state
   useEffect(() => {
@@ -62,11 +68,14 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       if (word) {
         newState.displayedHints = getDisplayedHintsForWord(game, word.index);
         const completed = isWordCompleted(game, word.index);
+        const skipped = isWordSkipped(game, word.index);
         newState.answer = word;
         newState.solved = completed;
-        newState.userGuess = completed
-          ? word.word.split("")
-          : Array(word.word.length).fill("");
+        newState.skipped = skipped;
+        newState.userGuess =
+          completed || skipped
+            ? word.word.split("")
+            : Array(word.word.length).fill("");
       }
     }
     setGameState(newState);
@@ -108,6 +117,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       msg = GUESS_INVALID;
     }
 
+    console.log(newState);
     updateGameState(newState);
     toggleToast(true, msg, type);
   }
@@ -225,7 +235,21 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       g[revealedIndex] = answer.word.split("")[revealedIndex];
 
       updateGameState({ ...gameState, displayedHints: newHints, userGuess: g });
+
+      saveHintsForWord(game, answer.index, newHints);
     }
+  }
+
+  function skipWord() {
+    if (!isEasyMode()) {
+      return;
+    }
+    updateGameState({
+      ...gameState,
+      skipped: true,
+      userGuess: answer.word.split(""),
+    });
+    markWordSkipped(game, answer.index);
   }
 
   return (
@@ -249,23 +273,27 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
             userGuess={userGuess}
           />
           <TileInput
-            solved={solved}
+            solved={solved || skipped}
             fillLetter={game.includes("eight") ? answer.letter : null}
             fillIndex={game.includes("eight") ? answer.letterIndex : null}
             hints={displayedHints}
             answer={answer.word}
             userGuess={userGuess}
+            className={skipped ? "bg-danger" : ""}
           />
 
           <div className='container'>
-            <HintButton
-              revealHint={revealHint}
-              displayedHints={displayedHints}
-              solved={solved}
-            />
+            {isEasyMode() && (
+              <HintButton
+                revealHint={revealHint}
+                displayedHints={displayedHints}
+                solved={solved || skipped}
+              />
+            )}
             <SubmitButton
               isArchive={isArchive}
               solved={solved}
+              skipped={skipped}
               dateIndex={dateIndex}
               handleDateChange={handleDateChange}
               handleSubmit={handleSubmit}
@@ -273,6 +301,8 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
           </div>
         </div>
       </div>
+      <ConfirmModal confirmAction={() => skipWord()} />
+
       <SoftKeyboard
         name={game}
         handleInput={handleInput}

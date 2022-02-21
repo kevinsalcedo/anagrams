@@ -1,13 +1,26 @@
 function HintButton({ revealHint, displayedHints, solved }) {
-  const disabled = solved || displayedHints.length === 3;
+  if (displayedHints.length === 3) {
+    return (
+      <button
+        className='btn btn-danger me-1'
+        style={{ width: "7.5rem " }}
+        disabled={solved}
+        data-bs-toggle='modal'
+        data-bs-target='#confirmModal'
+      >
+        Give Up?
+      </button>
+    );
+  }
+
   return (
     <button
       className={`btn ${solved ? "btn-success" : "btn-secondary"} me-1 ${
-        disabled ? "bg-opacity-75" : ""
+        solved ? "bg-opacity-75" : ""
       }`}
       style={{ width: "7.5rem" }}
       onClick={() => revealHint()}
-      disabled={disabled}
+      disabled={solved}
     >
       <svg
         xmlns='http://www.w3.org/2000/svg'
@@ -22,7 +35,7 @@ function HintButton({ revealHint, displayedHints, solved }) {
             ? "orange"
             : "red"
         }
-        className={`bi bi-circle-fill me-1 ${disabled ? "opacity-75" : ""}`}
+        className={`bi bi-circle-fill me-1 ${solved ? "opacity-75" : ""}`}
         viewBox='0 0 16 16'
       >
         <circle cx='8' cy='8' r='8' />
@@ -38,7 +51,7 @@ function HintButton({ revealHint, displayedHints, solved }) {
             ? "orange"
             : "red"
         }
-        className={`bi bi-circle-fill  ${disabled ? "opacity-75" : ""}`}
+        className={`bi bi-circle-fill  ${solved ? "opacity-75" : ""}`}
         viewBox='0 0 16 16'
       >
         <circle cx='8' cy='8' r='8' />
@@ -47,14 +60,8 @@ function HintButton({ revealHint, displayedHints, solved }) {
         xmlns='http://www.w3.org/2000/svg'
         width='16'
         height='16'
-        fill={
-          displayedHints.length === 0 ||
-          displayedHints.length === 1 ||
-          displayedHints.length === 2
-            ? "white"
-            : "red"
-        }
-        className={`bi bi-circle-fill ms-1 ${disabled ? "opacity-75" : ""}`}
+        fill='white'
+        className={`bi bi-circle-fill ms-1 ${solved ? "opacity-75" : ""}`}
         viewBox='0 0 16 16'
       >
         <circle cx='8' cy='8' r='8' />

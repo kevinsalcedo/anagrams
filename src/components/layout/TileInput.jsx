@@ -8,6 +8,7 @@ function TileInput({
   hints,
   answer,
   userGuess,
+  className,
 }) {
   return (
     <div className='row mx-0 mt-2 mb-2 px-0 justify-content-center'>
@@ -26,6 +27,7 @@ function TileInput({
 
         return (
           <GameTile
+            className={className}
             key={index}
             value={letter}
             index={index}

@@ -2,7 +2,6 @@ import MainNav from "./components/layout/MainNav";
 import InfoModal from "./components/layout/InfoModal";
 import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
-// import { getGameSettings } from "./utils/settingsUtils";
 import { useState } from "react";
 import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
