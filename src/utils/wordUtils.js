@@ -170,7 +170,7 @@ export function isWordCompleted(listName, index) {
   return data.includes(index);
 }
 
-export function getDisplayedHintsForIndex(listName, index) {
+export function getDisplayedHintsForWord(listName, index) {
   const data = getListData(listName, false).hints;
   return data[index];
 }

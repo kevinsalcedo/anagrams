@@ -8,7 +8,7 @@ import {
   getLatestIncompleteIndex,
   isValidDate,
   isValidIndex,
-  getDisplayedHintsForIndex,
+  getDisplayedHintsForWord,
 } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
@@ -32,13 +32,13 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   const [gameState, setGameState] = useState({
     answer: null,
     solved: false,
-    guessString: "",
+    userGuess: [],
     dateIndex: -1,
     displayedHints: [],
   });
 
   const [gameSettings, setGameSettings] = useState(null);
-  const { dateIndex, solved, guessString, answer, displayedHints } = gameState;
+  const { dateIndex, solved, userGuess, answer, displayedHints } = gameState;
 
   // On game change, initialize game settings and game state
   useEffect(() => {
@@ -63,7 +63,9 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
         const completed = isWordCompleted(game, word.index);
         newState.answer = word;
         newState.solved = completed;
-        newState.guessString = completed ? word.word : "";
+        newState.userGuess = completed
+          ? word.word.split("")
+          : Array(word.word.length).fill("");
       }
     }
     setGameState(newState);
@@ -77,18 +79,18 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Handler for submitting a guess with the Enter key
   function handleSubmit() {
     let newState = { ...gameState };
+    let guessCopy = [...userGuess];
 
     let msg = GUESS_INCORRECT;
     let type = "danger";
 
-    // Use has not filled in entire guess
-    if (guessString.length !== answer.word.length) {
+    // User has not filled in entire guess
+    if (guessCopy.indexOf("") >= 0) {
       msg = GUESS_INCOMPLETE;
       type = "warning";
     }
-
     // Correct answer
-    else if (guessString === answer.word) {
+    else if (guessCopy.join("") === answer.word) {
       newState.solved = true;
       markWordCompleted(game, answer.index, displayedHints);
       msg = GUESS_SUCCESS;
@@ -100,8 +102,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
 
     // Incorrect characters used
     else if (
-      guessString.split("").sort().join("") !==
-      answer.word.split("").sort().join("")
+      guessCopy.sort().join("") !== answer.word.split("").sort().join("")
     ) {
       msg = GUESS_INVALID;
     }
@@ -113,7 +114,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Set the guess based on physical and virtual keyboard input
   function handleInput(character) {
     const newState = { ...gameState };
-    let newGuess = "";
 
     if (solved && !isArchive) {
       return;
@@ -125,23 +125,13 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       if (solved) {
         return;
       }
-      if (guessString.length < answer.word.length) {
-        // Get the prefilled guess merged with existing guess
-        let guessArray = getPrefilledGuess();
-        // Get the first empty position and place the new character there
-        let availableIdx = guessArray.indexOf("");
-        guessArray[availableIdx] = character.toUpperCase();
+      // Update the new guess
+      if (userGuess.indexOf("") >= 0) {
+        let preFilledGuess = getPrefilledGuess();
 
-        // Check to see if the array is full - concatenate string up to first empty space otherwise
-        availableIdx = guessArray.indexOf("");
-        if (availableIdx < 0) {
-          newGuess = guessArray.join("");
-        } else {
-          for (let i = 0; i < availableIdx; i++) {
-            newGuess += guessArray[i];
-          }
-        }
-        newState.guessString = newGuess;
+        let openIndex = preFilledGuess.indexOf("");
+        preFilledGuess[openIndex] = character.toUpperCase();
+        newState.userGuess = preFilledGuess;
       }
     }
 
@@ -150,27 +140,21 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       if (solved) {
         return;
       }
-      // Find the last filled in spot of the guess
-      let guessArray = getPrefilledGuess();
-      let availableIdx = guessArray.indexOf("");
-      let startIdx = guessArray.length - 1;
-      if (availableIdx >= 0) {
-        startIdx = availableIdx - 1;
+
+      let preFilledGuess = getPrefilledGuess();
+      let openIndex = preFilledGuess.indexOf("");
+      let startIndex = preFilledGuess.length - 1;
+      if (openIndex >= 0) {
+        startIndex = openIndex - 1;
       }
 
-      // Remove the first non-given character
-      for (let i = startIdx; i >= 0; i--) {
+      for (let i = startIndex; i >= 0; i--) {
         if (!isHintIndex(i)) {
-          guessArray[i] = "";
+          preFilledGuess[i] = "";
           break;
         }
       }
-      // Join the new guess
-      availableIdx = guessArray.indexOf("");
-      for (let i = 0; i < availableIdx; i++) {
-        newGuess += guessArray[i];
-      }
-      newState.guessString = newGuess;
+      newState.userGuess = preFilledGuess;
     }
 
     // Submit the form on enter
@@ -202,11 +186,10 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       guessArray[position] = split[position];
     }
 
-    // Fill in guess
-    let guessSplit = guessString.split("");
-    for (let i = 0; i < guessSplit.length; i++) {
+    // Fill in guess from user input array
+    for (let i = 0; i < userGuess.length; i++) {
       if (!isHintIndex(i)) {
-        guessArray[i] = guessSplit[i];
+        guessArray[i] = userGuess[i];
       }
     }
 
@@ -234,8 +217,13 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   function revealHint() {
     if (displayedHints.length < 3 && answer.hints) {
       let newHints = [...displayedHints];
-      newHints.push(answer.hints[newHints.length]);
-      updateGameState({ ...gameState, displayedHints: newHints });
+      let revealedIndex = answer.hints[newHints.length];
+      newHints.push(revealedIndex);
+
+      let g = getPrefilledGuess();
+      g[revealedIndex] = answer.word.split("")[revealedIndex];
+
+      updateGameState({ ...gameState, displayedHints: newHints, userGuess: g });
     }
   }
 
@@ -257,21 +245,22 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
                 : answer.word.split("").sort().join("")
             }
             handleTap={handleInput}
+            userGuess={userGuess}
           />
           <TileInput
-            size={gameSettings.WORD_SIZE}
-            word={guessString}
             solved={solved}
             fillLetter={game.includes("eight") ? answer.letter : null}
             fillIndex={game.includes("eight") ? answer.letterIndex : null}
             hints={displayedHints}
             answer={answer.word}
+            userGuess={userGuess}
           />
 
           <div className='container'>
             <HintButton
               revealHint={revealHint}
               displayedHints={displayedHints}
+              solved={solved}
             />
             <SubmitButton
               isArchive={isArchive}

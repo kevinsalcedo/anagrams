@@ -56,6 +56,10 @@ body,
   color: white;
 }
 
+.tile-hidden {
+  background-color: rgb(51, 51, 51);
+}
+
 .simple-keyboard {
   max-width: 75%;
 }

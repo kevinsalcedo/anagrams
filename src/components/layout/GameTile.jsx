@@ -5,6 +5,7 @@ function GameTile({
   readOnly = false,
   handleTap,
   immutable,
+  className,
 }) {
   let styles = "";
   if (value !== " " && !solved) {
@@ -25,7 +26,7 @@ function GameTile({
     <button
       key={`tile-${index}`}
       id={`tile-${index}`}
-      className={`d-flex border letter-tile ${styles} align-items-center justify-content-center align-items-center`}
+      className={`${className} d-flex border letter-tile ${styles} align-items-center justify-content-center align-items-center`}
       onClick={() => {
         if (readOnly && !solved) {
           handleTap(value);
