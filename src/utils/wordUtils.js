@@ -170,14 +170,21 @@ export function isWordCompleted(listName, index) {
   return data.includes(index);
 }
 
+export function getDisplayedHintsForIndex(listName, index) {
+  const data = getListData(listName, false).hints;
+  return data[index];
+}
+
 // Save index and number of attempts of completed anagram to given list
 // Returns - nothing
-export function markWordCompleted(listName, index) {
+export function markWordCompleted(listName, index, displayedHints) {
   const listData = getListData(listName, false);
 
   let newListData = {
     completed: [...listData.completed, index],
+    hints: { ...listData.hints },
   };
+  newListData.hints[index] = displayedHints;
 
   let newData = {
     ...getSavedData(),

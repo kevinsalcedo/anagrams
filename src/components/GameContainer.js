@@ -8,6 +8,7 @@ import {
   getLatestIncompleteIndex,
   isValidDate,
   isValidIndex,
+  getDisplayedHintsForIndex,
 } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
@@ -20,9 +21,11 @@ import {
 import { getGameSettings } from "../utils/settingsUtils";
 import PageTitle from "./layout/PageTitle";
 import SoftKeyboard from "./SoftKeyboard";
-import TileDisplay from "./layout/TileDisplay";
+import TileInput from "./layout/TileInput";
 import DateSelector from "./DateSelector";
 import SubmitButton from "./SubmitButton";
+import AlphaDisplay from "./layout/AlphaDisplay";
+import HintButton from "./HintButton";
 
 function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Game state
@@ -31,10 +34,11 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     solved: false,
     guessString: "",
     dateIndex: -1,
+    displayedHints: [],
   });
 
   const [gameSettings, setGameSettings] = useState(null);
-  const { dateIndex, solved, guessString, answer } = gameState;
+  const { dateIndex, solved, guessString, answer, displayedHints } = gameState;
 
   // On game change, initialize game settings and game state
   useEffect(() => {
@@ -54,7 +58,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       } else {
         idx = newState.dateIndex;
       }
-
       let word = isArchive ? getWordByIndex(game, idx) : getWord(game, false);
       if (word) {
         const completed = isWordCompleted(game, word.index);
@@ -86,9 +89,8 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
 
     // Correct answer
     else if (guessString === answer.word) {
-      // setSolved(true);
       newState.solved = true;
-      markWordCompleted(game, answer.index);
+      markWordCompleted(game, answer.index, displayedHints);
       msg = GUESS_SUCCESS;
       if (isArchive) {
         msg = isValidIndex(dateIndex + 1) ? ARCHIVE_NEXT : ARCHIVE_END;
@@ -124,20 +126,20 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
         return;
       }
       if (guessString.length < answer.word.length) {
-        // [Eights Mode] If a different character, append. If same, act as if you added it
+        // Get the prefilled guess merged with existing guess
+        let guessArray = getPrefilledGuess();
+        // Get the first empty position and place the new character there
+        let availableIdx = guessArray.indexOf("");
+        guessArray[availableIdx] = character.toUpperCase();
 
-        if (
-          game.includes("eight") &&
-          guessString.length === answer.letterIndex
-        ) {
-          console.log(character);
-          if (character.toUpperCase() !== answer.letter) {
-            newGuess = guessString + answer.letter + character.toUpperCase();
-          } else {
-            newGuess = guessString + answer.letter;
-          }
+        // Check to see if the array is full - concatenate string up to first empty space otherwise
+        availableIdx = guessArray.indexOf("");
+        if (availableIdx < 0) {
+          newGuess = guessArray.join("");
         } else {
-          newGuess = guessString + character.toUpperCase();
+          for (let i = 0; i < availableIdx; i++) {
+            newGuess += guessArray[i];
+          }
         }
         newState.guessString = newGuess;
       }
@@ -148,15 +150,25 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       if (solved) {
         return;
       }
-      if (guessString.length > 0) {
-        if (
-          game.includes("eight") &&
-          guessString.length === answer.letterIndex + 1
-        ) {
-          newGuess = guessString.substring(0, guessString.length - 2);
-        } else {
-          newGuess = guessString.substring(0, guessString.length - 1);
+      // Find the last filled in spot of the guess
+      let guessArray = getPrefilledGuess();
+      let availableIdx = guessArray.indexOf("");
+      let startIdx = guessArray.length - 1;
+      if (availableIdx >= 0) {
+        startIdx = availableIdx - 1;
+      }
+
+      // Remove the first non-given character
+      for (let i = startIdx; i >= 0; i--) {
+        if (!isHintIndex(i)) {
+          guessArray[i] = "";
+          break;
         }
+      }
+      // Join the new guess
+      availableIdx = guessArray.indexOf("");
+      for (let i = 0; i < availableIdx; i++) {
+        newGuess += guessArray[i];
       }
       newState.guessString = newGuess;
     }
@@ -175,6 +187,40 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
     }
   }
 
+  // Return array of given letters and the guess string
+  function getPrefilledGuess() {
+    let split = answer.word.split("");
+    let guessArray = Array(answer.word.length).fill("");
+    // Fill 8s given letter
+    if (answer.letterIndex && answer.letter) {
+      guessArray[answer.letterIndex] = answer.letter;
+    }
+
+    // Fill displayed hints
+    for (let idx = 0; idx < displayedHints.length; idx++) {
+      let position = displayedHints[idx];
+      guessArray[position] = split[position];
+    }
+
+    // Fill in guess
+    let guessSplit = guessString.split("");
+    for (let i = 0; i < guessSplit.length; i++) {
+      if (!isHintIndex(i)) {
+        guessArray[i] = guessSplit[i];
+      }
+    }
+
+    return guessArray;
+  }
+
+  // Return true if index matches the given letter or displayed hints
+  function isHintIndex(idx) {
+    return (
+      displayedHints.includes(idx) ||
+      (answer.letterIndex >= 0 && answer.letterIndex === idx)
+    );
+  }
+
   // Setter for the datepicker
   function handleDateChange(date) {
     let dayDiff = getDayDiff(date);
@@ -182,6 +228,15 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       return;
     }
     updateGameState({ ...gameState, dateIndex: dayDiff });
+  }
+
+  // Setter for hint display
+  function revealHint() {
+    if (displayedHints.length < 3 && answer.hints) {
+      let newHints = [...displayedHints];
+      newHints.push(answer.hints[newHints.length]);
+      updateGameState({ ...gameState, displayedHints: newHints });
+    }
   }
 
   return (
@@ -195,35 +250,37 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
           {isArchive && (
             <DateSelector dateIndex={dateIndex} setDate={handleDateChange} />
           )}
-          <TileDisplay
-            size={
-              game.includes("eight") && answer.alpha.length === 7
-                ? 7
-                : gameSettings.WORD_SIZE
-            }
-            word={
+          <AlphaDisplay
+            alpha={
               answer.alpha
                 ? answer.alpha
                 : answer.word.split("").sort().join("")
             }
-            readOnly
             handleTap={handleInput}
           />
-          <TileDisplay
+          <TileInput
             size={gameSettings.WORD_SIZE}
             word={guessString}
             solved={solved}
             fillLetter={game.includes("eight") ? answer.letter : null}
             fillIndex={game.includes("eight") ? answer.letterIndex : null}
+            hints={displayedHints}
+            answer={answer.word}
           />
 
-          <SubmitButton
-            isArchive={isArchive}
-            solved={solved}
-            dateIndex={dateIndex}
-            handleDateChange={handleDateChange}
-            handleSubmit={handleSubmit}
-          />
+          <div className='container'>
+            <HintButton
+              revealHint={revealHint}
+              displayedHints={displayedHints}
+            />
+            <SubmitButton
+              isArchive={isArchive}
+              solved={solved}
+              dateIndex={dateIndex}
+              handleDateChange={handleDateChange}
+              handleSubmit={handleSubmit}
+            />
+          </div>
         </div>
       </div>
       <SoftKeyboard
