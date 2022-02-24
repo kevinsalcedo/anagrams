@@ -75,7 +75,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
         newState.userGuess =
           completed || skipped
             ? word.word.split("")
-            : Array(word.word.length).fill("");
+            : getPrefilledGuess(true, word, newState.displayedHints);
       }
     }
     setGameState(newState);
@@ -117,7 +117,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       msg = GUESS_INVALID;
     }
 
-    console.log(newState);
     updateGameState(newState);
     toggleToast(true, msg, type);
   }
@@ -183,24 +182,30 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   }
 
   // Return array of given letters and the guess string
-  function getPrefilledGuess() {
-    let split = answer.word.split("");
-    let guessArray = Array(answer.word.length).fill("");
+  // By default uses global state, but can specify word/hints to generate new empty guess
+  function getPrefilledGuess(isNewGuess, word, hints) {
+    let theWord = word ? word : answer;
+    let splitWord = theWord.word.split("");
+    let guessArray = Array(theWord.word.length).fill("");
+
     // Fill 8s given letter
-    if (answer.letterIndex && answer.letter) {
-      guessArray[answer.letterIndex] = answer.letter;
+    if (theWord.letterIndex && theWord.letter) {
+      guessArray[theWord.letterIndex] = theWord.letter;
     }
 
     // Fill displayed hints
-    for (let idx = 0; idx < displayedHints.length; idx++) {
-      let position = displayedHints[idx];
-      guessArray[position] = split[position];
+    let theHints = hints ? hints : displayedHints;
+    for (let idx = 0; idx < theHints.length; idx++) {
+      let position = theHints[idx];
+      guessArray[position] = splitWord[position];
     }
 
-    // Fill in guess from user input array
-    for (let i = 0; i < userGuess.length; i++) {
-      if (!isHintIndex(i)) {
-        guessArray[i] = userGuess[i];
+    if (!isNewGuess) {
+      // Fill in guess from user input array
+      for (let i = 0; i < userGuess.length; i++) {
+        if (!isHintIndex(i)) {
+          guessArray[i] = userGuess[i];
+        }
       }
     }
 
@@ -268,6 +273,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
             }
             handleTap={handleInput}
             userGuess={userGuess}
+            fillIndex={game.includes("eight") ? answer.letterIndex : null}
           />
           <TileInput
             solved={solved || skipped}

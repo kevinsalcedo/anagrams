@@ -1,13 +1,16 @@
 import GameTile from "./GameTile";
 
-function AlphaDisplay({ alpha, handleTap, userGuess }) {
+function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
   let hiddenIndexList = [];
   let alphaCopy = alpha;
 
+  // Iterate over user guess to mark alphagram tiles to hide
   for (let i = 0; i < userGuess.length; i++) {
     let idx = alphaCopy.indexOf(userGuess[i]);
-    if (idx >= 0 && userGuess[i] !== "") {
+    // Ignore the given letter if provided
+    if (idx >= 0 && userGuess[i] !== "" && fillIndex && i !== fillIndex) {
       hiddenIndexList.push(idx);
+      // Replace the position in the alphagram with * so we can preserve index order
       let s = alphaCopy.split("");
       s[idx] = "*";
       alphaCopy = s.join("");
