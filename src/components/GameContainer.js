@@ -21,7 +21,7 @@ import {
   ARCHIVE_NEXT,
   ARCHIVE_END,
 } from "../assets/alertMessages";
-import { getGameSettings, isEasyMode } from "../utils/settingsUtils";
+import { getGameSettings } from "../utils/settingsUtils";
 import PageTitle from "./layout/PageTitle";
 import SoftKeyboard from "./SoftKeyboard";
 import TileInput from "./layout/TileInput";
@@ -241,9 +241,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   }
 
   function skipWord() {
-    if (!isEasyMode()) {
-      return;
-    }
     updateGameState({
       ...gameState,
       skipped: true,
@@ -283,13 +280,11 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
           />
 
           <div className='container'>
-            {isEasyMode() && (
-              <HintButton
-                revealHint={revealHint}
-                displayedHints={displayedHints}
-                solved={solved || skipped}
-              />
-            )}
+            <HintButton
+              revealHint={revealHint}
+              displayedHints={displayedHints}
+              solved={solved || skipped}
+            />
             <SubmitButton
               isArchive={isArchive}
               solved={solved}

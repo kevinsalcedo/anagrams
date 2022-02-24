@@ -35,22 +35,6 @@ function SettingsModal() {
           </div>
           <div className='modal-body'>
             <div className='container d-flex mx-auto  flex-column w-50'>
-              <div className='form-check form-switch'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  role='switch'
-                  id='flexSwitchCheckDefault'
-                  checked={isHints}
-                  onChange={() => toggleMode()}
-                />
-                <label
-                  className='form-check-label'
-                  htmlFor='flexSwitchCheckDefault'
-                >
-                  Enable Hints
-                </label>
-              </div>{" "}
               <button
                 className='btn bg-danger text-white dropdown-toggle'
                 data-bs-toggle='dropdown'
