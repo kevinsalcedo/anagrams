@@ -21,6 +21,12 @@ function App() {
 
   // Let the ToastMessage comoponent know if it should render
   function toggleToast(show, msg, type) {
+    // Hide the toast - for when same message is set consecutively
+    if (show) {
+      console.log("Hiding current toast");
+      setToastVisible(false);
+    }
+    console.log(`Setting ${show}, ${msg}, ${type}`);
     setToastVisible(show);
     setToastmsg(show ? msg : "");
     setToastType(show ? type : "");

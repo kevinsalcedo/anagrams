@@ -124,7 +124,6 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // Set the guess based on physical and virtual keyboard input
   function handleInput(character) {
     const newState = { ...gameState };
-
     if (solved && !isArchive) {
       return;
     }

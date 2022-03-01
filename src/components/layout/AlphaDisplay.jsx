@@ -8,7 +8,11 @@ function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
   for (let i = 0; i < userGuess.length; i++) {
     let idx = alphaCopy.indexOf(userGuess[i]);
     // Ignore the given letter if provided
-    if (idx >= 0 && userGuess[i] !== "" && fillIndex && i !== fillIndex) {
+    if (idx >= 0 && userGuess[i] !== "") {
+      // If fillIndex is provided (8s puzzle), check to make sure we're not filling it in
+      if (fillIndex !== null && i === fillIndex) {
+        continue;
+      }
       hiddenIndexList.push(idx);
       // Replace the position in the alphagram with * so we can preserve index order
       let s = alphaCopy.split("");
