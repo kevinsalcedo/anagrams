@@ -1,17 +1,6 @@
-// import { SettingsContext } from "./SettingsContext";
-import { useState } from "react";
-import { isEasyMode, setEasyMode } from "../utils/settingsUtils";
-
 import { resetAllData, resetDataForList } from "../utils/wordUtils";
 
 function SettingsModal() {
-  // const { settings, toggleEasyMode, toggleTheme } = useContext(SettingsContext);
-  const [isHints, toggleHints] = useState(isEasyMode());
-
-  function toggleMode() {
-    setEasyMode(!isHints);
-    toggleHints((prev) => !prev);
-  }
   return (
     <div
       className='modal fade'

@@ -9,6 +9,10 @@ body,
   src: local("Jopert"), url(./fonts/Jopert_v5-Regular.ttf) format("truetype");
 }
 
+.jopert {
+  font-family: "Jopert";
+}
+
 .main-wrapper {
   /* min-height: 100vh; */
   height: 100%;

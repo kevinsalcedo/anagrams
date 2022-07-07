@@ -21,7 +21,7 @@ import {
   ARCHIVE_NEXT,
   ARCHIVE_END,
 } from "../assets/alertMessages";
-import { getGameSettings } from "../utils/settingsUtils";
+import { getGameSettings, markFirstVisit } from "../utils/settingsUtils";
 import PageTitle from "./layout/PageTitle";
 import SoftKeyboard from "./SoftKeyboard";
 import TileInput from "./layout/TileInput";
@@ -49,6 +49,9 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
   // On game change, initialize game settings and game state
   useEffect(() => {
     const gameSettings = getGameSettings(game);
+    if (gameSettings.firstVisit < 0) {
+      markFirstVisit();
+    }
     setGameSettings((prev) => gameSettings);
     // Initialize
     updateGameState(gameState, true);

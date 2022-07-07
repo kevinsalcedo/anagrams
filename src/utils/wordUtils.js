@@ -235,6 +235,138 @@ export function markWordCompleted(listName, index, displayedHints) {
   saveData(newData);
 }
 
+export function getStats(listName) {
+  if (listName === "all") {
+    let sevens = getPlayerStatistics("sevens");
+    let eights = getPlayerStatistics("eights");
+
+    let aggregated = {
+      numCompleted: sevens.numCompleted + eights.numCompleted,
+      numSkipped: sevens.numSkipped + eights.numSkipped,
+      totalHints: sevens.totalHints + eights.totalHints,
+      avgHints: (
+        (sevens.totalHints + eights.totalHints) /
+        (sevens.numCompleted + eights.numCompleted)
+      ).toFixed(2),
+      numWords: sevens.numWords + eights.numWords,
+    };
+    console.log(aggregated);
+    return aggregated;
+  }
+
+  return getPlayerStatistics(listName);
+}
+
+export function getPlayerStatistics(listName) {
+  let stats = {
+    numCompleted: 0,
+    numSkipped: 0,
+    totalHints: 0,
+    avgHints: 0,
+    numWords: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+  };
+
+  let data = getListData(listName);
+  let words = getWordList(listName);
+
+  stats.numWords = words.length;
+  stats.numCompleted = data.completed ? data.completed.length : 0;
+  stats.numSkipped = data.skipped ? data.skipped.length : 0;
+  stats.totalHints = getAllHintStats(false);
+  stats.avgHints = getAllHintStats(true);
+  stats.currentStreak = getCurrentStreak();
+  stats.bestStreak = getBestStreak();
+
+  return stats;
+}
+
+function getAllHintStats(returnAvg) {
+  let sevens = getListData("sevens");
+  let eights = getListData("eights");
+
+  let sevenHint = getHintStats(sevens.hints, false);
+  let eightHint = getHintStats(eights.hints, false);
+
+  if (returnAvg) {
+    return (
+      (sevenHint + eightHint) /
+      (Object.keys(sevenHint).length + Object.keys(eightHint).length)
+    );
+  }
+  return sevenHint + eightHint;
+}
+
+function getHintStats(hints, returnAvg) {
+  let count = 0;
+  let numKeys = 0;
+  if (!hints || hints.length === 0) {
+    return;
+  }
+
+  let keys = Object.keys(hints);
+  for (let i = 0; i < keys.length; i++) {
+    let hintsUsed = hints[keys[i]];
+    if (hintsUsed && hintsUsed.length > 0) {
+      count += hintsUsed.length;
+      numKeys++;
+    }
+  }
+  if (returnAvg) {
+    return numKeys > 0 ? (count / numKeys).toFixed(2) : 0;
+  }
+
+  return count;
+}
+
+export function getCurrentStreak() {
+  let sevensData = getListData("sevens", false);
+  let eightsData = getListData("eights", false);
+
+  if (
+    sevensData &&
+    sevensData.completed &&
+    eightsData &&
+    eightsData.completed
+  ) {
+    let streak = 0;
+    let day = getDay();
+    let sevensComp = sevensData.completed;
+    let eightsComp = eightsData.completed;
+    while (sevensComp.includes(day) && eightsComp.includes(day)) {
+      streak++;
+      day--;
+    }
+    return streak;
+  }
+
+  return 0;
+}
+
+export function getBestStreak() {
+  let sevensData = getListData("sevens", false);
+  let eightData = getListData("eights", false);
+  if (sevensData && sevensData.completed) {
+    let streak = 0;
+    let best = 0;
+    let day = getDay();
+    let sevensComp = sevensData.completed;
+    let eightsComp = eightData.completed;
+    while (day >= 0) {
+      if (sevensComp.includes(day) && eightsComp.includes(day)) {
+        streak++;
+      } else {
+        best = Math.max(best, streak);
+        streak = 0;
+      }
+      day--;
+    }
+    return best;
+  }
+  return 0;
+}
+
 // Reset ALL saved anagram data
 export function resetAllData() {
   saveData({});

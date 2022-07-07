@@ -2,7 +2,7 @@ import MainNav from "./components/layout/MainNav";
 import InfoModal from "./components/layout/InfoModal";
 import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
@@ -23,17 +23,14 @@ function App() {
   function toggleToast(show, msg, type) {
     // Hide the toast - for when same message is set consecutively
     if (show) {
-      console.log("Hiding current toast");
       setToastVisible(false);
     }
-    console.log(`Setting ${show}, ${msg}, ${type}`);
     setToastVisible(show);
     setToastmsg(show ? msg : "");
     setToastType(show ? type : "");
   }
 
   return (
-    // <SettingsContextProvider>
     <div className='h-100 d-flex flex-column text-center'>
       <MainNav setGame={switchGame} />
       <ToastMessage
@@ -55,7 +52,6 @@ function App() {
       <InfoModal />
       <SettingsModal />
     </div>
-    // </SettingsContextProvider>
   );
 }
 

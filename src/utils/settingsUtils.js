@@ -1,3 +1,5 @@
+import { getDay } from "./wordUtils";
+
 export function saveUserPreferences(data) {
   localStorage.setItem("anagramSettings", JSON.stringify(data));
 }
@@ -12,10 +14,23 @@ export function getUserPreferences() {
   anagramSettings = {
     easyMode: false,
     theme: "light",
+    firstVisit: -1,
   };
 
   saveUserPreferences(anagramSettings);
   return anagramSettings;
+}
+
+export function getFirstVisit() {
+  return getUserPreferences().firstVisit;
+}
+
+export function markFirstVisit() {
+  let prefs = { ...getUserPreferences() };
+  if (getFirstVisit() < 0) {
+    prefs.firstVisit = getDay();
+    saveUserPreferences(prefs);
+  }
 }
 
 export function isEasyMode() {
