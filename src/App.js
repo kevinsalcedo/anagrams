@@ -7,6 +7,13 @@ import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
 function App() {
+
+  // First time visit - initiate modal, then set flag to visited\
+  // Should be able to toggle the modal via some icon in the header?
+  useEffect(function() {
+
+  }, []);
+
   // Toast Message data
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastmsg] = useState("");

@@ -235,51 +235,46 @@ export function markWordCompleted(listName, index, displayedHints) {
   saveData(newData);
 }
 
-export function getStats(listName) {
-  if (listName === "all") {
-    let sevens = getPlayerStatistics("sevens");
-    let eights = getPlayerStatistics("eights");
-
-    let aggregated = {
-      numCompleted: sevens.numCompleted + eights.numCompleted,
-      numSkipped: sevens.numSkipped + eights.numSkipped,
-      totalHints: sevens.totalHints + eights.totalHints,
-      avgHints: (
-        (sevens.totalHints + eights.totalHints) /
-        (sevens.numCompleted + eights.numCompleted)
-      ).toFixed(2),
-      numWords: sevens.numWords + eights.numWords,
-    };
-    console.log(aggregated);
-    return aggregated;
-  }
-
-  return getPlayerStatistics(listName);
-}
-
-export function getPlayerStatistics(listName) {
+export function getStats() {
   let stats = {
     numCompleted: 0,
     numSkipped: 0,
     totalHints: 0,
     avgHints: 0,
-    numWords: 0,
     currentStreak: 0,
     bestStreak: 0,
   };
 
-  let data = getListData(listName);
-  let words = getWordList(listName);
-
-  stats.numWords = words.length;
-  stats.numCompleted = data.completed ? data.completed.length : 0;
-  stats.numSkipped = data.skipped ? data.skipped.length : 0;
+  stats.numCompleted = getCompletedPairs();
+  stats.numSkipped = getNumSkipped();
   stats.totalHints = getAllHintStats(false);
   stats.avgHints = getAllHintStats(true);
   stats.currentStreak = getCurrentStreak();
   stats.bestStreak = getBestStreak();
 
   return stats;
+}
+
+function getCompletedPairs() {
+  let sevens = getListData("sevens");
+  let eights = getListData("eights");
+
+  let completedSevens = sevens.completed ? sevens.completed : [];
+  let completedEights = eights.completed ? eights.completed : [];
+
+  let intersection = completedSevens.filter(value => completedEights.includes(value));
+
+  return intersection.length;
+}
+
+function getNumSkipped() {
+  let sevens = getListData("sevens");
+  let eights = getListData("eights");
+
+  let skippedSevens = sevens.skipped ? sevens.skipped.length : 0;
+  let skippedEights = eights.skipped ? eights.skipped.length : 0;
+
+  return skippedSevens + skippedEights;
 }
 
 function getAllHintStats(returnAvg) {
@@ -289,7 +284,8 @@ function getAllHintStats(returnAvg) {
   let sevenHint = getHintStats(sevens.hints, false);
   let eightHint = getHintStats(eights.hints, false);
 
-  if (returnAvg) {
+  if (returnAvg && ((sevenHint + eightHint) > 0)) {
+
     return (
       (sevenHint + eightHint) /
       (Object.keys(sevenHint).length + Object.keys(eightHint).length)
@@ -396,11 +392,13 @@ Localstorage data structure:
 data: {
   listName1: {
     completed: [0,1,...],
-    attempts: 5
+    hints: {0: [], 1: [], ...},
+    skipped : [3,4,...]
   },
   listName2: {
     completed: [5,7,...],
-    attempts: 25
+    hints: {0: [], 1: [], ...},
+    skipped : [3,4,...]
   }
 }
 */

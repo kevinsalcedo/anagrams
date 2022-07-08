@@ -2,6 +2,7 @@ function StatTile({ items, padHeight = false }) {
   const tile = (title, value) => {
     return (
       <div
+      key={title + "_tile"}
         className='d-flex flex-column col m-1 justify-content-center'
         style={{ backgroundColor: "lightgray" }}
       >
