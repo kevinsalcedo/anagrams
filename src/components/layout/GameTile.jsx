@@ -30,7 +30,7 @@ function GameTile({
       className={`${className} d-flex border letter-tile ${styles} align-items-center justify-content-center align-items-center`}
       onClick={() => {
         if (readOnly && !solved) {
-          handleTap(value);
+          handleTap(value, index);
         }
       }}
       disabled={disabled}

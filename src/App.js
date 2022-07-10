@@ -2,16 +2,16 @@ import MainNav from "./components/layout/MainNav";
 import InfoModal from "./components/layout/InfoModal";
 import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
+import { getStats } from "./utils/wordUtils";
 import { useEffect, useState } from "react";
 import AnagramOfTheDay from "./pages/AnagramOfTheDay";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
 function App() {
-
   // First time visit - initiate modal, then set flag to visited\
   // Should be able to toggle the modal via some icon in the header?
-  useEffect(function() {
-
+  useEffect(function () {
+    updateStats();
   }, []);
 
   // Toast Message data
@@ -20,6 +20,20 @@ function App() {
   const [toastType, setToastType] = useState("");
 
   const [game, setGame] = useState("sevens");
+
+  const [stats, setStats] = useState({
+    numCompleted: 0,
+    numSkipped: 0,
+    totalHints: 0,
+    avgHints: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+  });
+
+  function updateStats() {
+    let newStats = getStats();
+    setStats(newStats);
+  }
 
   function switchGame(game) {
     setGame((prev) => game);
@@ -53,11 +67,13 @@ function App() {
           title={
             game.includes("archived") ? "The Archives" : "Anagram of the Day"
           }
+          updateStats={updateStats}
           isArchive={game.includes("archived-")}
         />
       </main>
       <InfoModal />
       <SettingsModal />
+      <InfoModal stats={stats} />
     </div>
   );
 }

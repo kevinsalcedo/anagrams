@@ -6,33 +6,33 @@ import moment from "moment";
 // TODO: Set to be the launch day
 export const FIRST_DAY = moment([2022, 0, 1]);
 
-// Get the current day's index
+// Returns - the current day's index (current day - launch day)
 export function getDay() {
   let today = moment();
   return today.diff(FIRST_DAY, "days");
 }
 
-// Get the day index of the given date
+// Returns - the day index of the given date
 export function getDayDiff(date) {
   return moment(date).diff(FIRST_DAY, "days");
 }
 
-// Get the date from a given index
+// Returns - the date from a given index (launch day + index # of days)
 export function getDayByIndex(index) {
   return moment(FIRST_DAY).add(index, "days").toDate();
 }
 
-// Return true if index is after 0 and before today's index
+// Returns - true if index is after 0 and before today's index
 export function isValidIndex(index) {
   return index >= 0 && index < getDay();
 }
 
-// Return true if date is after FIRST_DAY and before today
+// Returns - true if date is after FIRST_DAY and before today
 export function isValidDate(date) {
   return isValidIndex(getDayDiff(date));
 }
 
-// Return the first incomplete day for the archive
+// Returns - the first incomplete day for the archive
 export function getLatestIncompleteIndex(listName) {
   let idx = 0;
   let archivedCompleted = getListData(listName, false);
@@ -50,7 +50,7 @@ export function getLatestIncompleteIndex(listName) {
   return idx;
 }
 
-// Return the list based on the listname given
+// Returns - the entire word list based on the listname given
 export function getWordList(listName) {
   if (listName.includes("sevens")) {
     return seven_hints;
@@ -63,6 +63,8 @@ export function getWordList(listName) {
   return [];
 }
 
+// Save the given game data
+// Returns - nothing
 function saveData(allData) {
   localStorage.setItem("anagrams", JSON.stringify(allData));
 }
@@ -81,7 +83,7 @@ export function getSavedData() {
   return data;
 }
 
-// Return list data object for app
+// Get list data object for app
 // Returns - JSON object of list data
 export function getListData(listName, returnWords) {
   const words = getWordList(listName);
@@ -143,6 +145,7 @@ export function getWord(listName, useArchive) {
 }
 
 // For archived retrieval of past words
+// Returns - word info for a given index
 export function getWordByIndex(listName, index) {
   // Cannot request words past the the previous day or earlier than the first day
   if (!isValidIndex(index)) {
@@ -169,16 +172,21 @@ export function getWordByIndex(listName, index) {
   };
 }
 
+// Returns - true if word of the day has been completed for hte given list
 export function isWordCompleted(listName, index) {
   const data = getListData(listName, false).completed;
   return data && data.includes(index);
 }
 
+// Returns - true if word of the day has been skipped for hte given list
 export function isWordSkipped(listName, index) {
   const data = getListData(listName, false).skipped;
   return data && data.includes(index);
 }
 
+// Method to save hints whenever a user reveals one
+// Prevents users resetting hints when refreshing or leaving page
+// Returns - nothing
 export function saveHintsForWord(listName, index, hints) {
   let listData = getListData(listName, false);
 
@@ -193,6 +201,7 @@ export function saveHintsForWord(listName, index, hints) {
   saveData(newData);
 }
 
+// Returns -  the saved hints from localstorage
 export function getDisplayedHintsForWord(listName, index) {
   const data = getListData(listName, false).hints;
   if (data && data[index]) {
@@ -202,6 +211,8 @@ export function getDisplayedHintsForWord(listName, index) {
   return [];
 }
 
+// Save skipped words so that they stay skipped when leaving page
+// Returns - nothing
 export function markWordSkipped(listName, index) {
   const listData = getListData(listName, false);
   let newListData = {
@@ -235,6 +246,9 @@ export function markWordCompleted(listName, index, displayedHints) {
   saveData(newData);
 }
 
+// Get game statistics for information modal
+// Returns - JSON object with game stats
+// TODO - add parameter to retrieve archive stats instaed
 export function getStats() {
   let stats = {
     numCompleted: 0,
@@ -255,6 +269,8 @@ export function getStats() {
   return stats;
 }
 
+// Statistics Helper
+// Returns - count of indices present in both lists (num days where user did both 7s and 8s)
 function getCompletedPairs() {
   let sevens = getListData("sevens");
   let eights = getListData("eights");
@@ -262,11 +278,15 @@ function getCompletedPairs() {
   let completedSevens = sevens.completed ? sevens.completed : [];
   let completedEights = eights.completed ? eights.completed : [];
 
-  let intersection = completedSevens.filter(value => completedEights.includes(value));
+  let intersection = completedSevens.filter((value) =>
+    completedEights.includes(value)
+  );
 
   return intersection.length;
 }
 
+// Statistics Helper
+// Returns - total number of individual words skipped
 function getNumSkipped() {
   let sevens = getListData("sevens");
   let eights = getListData("eights");
@@ -277,6 +297,10 @@ function getNumSkipped() {
   return skippedSevens + skippedEights;
 }
 
+// Statistics Helper
+// Returns - if returnAvg = false, total number of hints used
+// Returns - if returnAvg = true, total number of hints used divided by the total words played
+// TODO - confirm this ONLY includes days user has played (unfinished, skipped, completed)
 function getAllHintStats(returnAvg) {
   let sevens = getListData("sevens");
   let eights = getListData("eights");
@@ -284,16 +308,17 @@ function getAllHintStats(returnAvg) {
   let sevenHint = getHintStats(sevens.hints, false);
   let eightHint = getHintStats(eights.hints, false);
 
-  if (returnAvg && ((sevenHint + eightHint) > 0)) {
-
-    return (
+  if (returnAvg && sevenHint + eightHint > 0) {
+    const avg =
       (sevenHint + eightHint) /
-      (Object.keys(sevenHint).length + Object.keys(eightHint).length)
-    );
+      (Object.keys(sevens.hints).length + Object.keys(eights.hints).length);
+    return avg.toPrecision(2);
   }
   return sevenHint + eightHint;
 }
 
+// Statistics Helper, Helper
+// Returns - Hint information given a list name
 function getHintStats(hints, returnAvg) {
   let count = 0;
   let numKeys = 0;
@@ -316,6 +341,9 @@ function getHintStats(hints, returnAvg) {
   return count;
 }
 
+// Statistics Helper
+// Returns - The number of consecutive days a user has completed
+// TODO - if a user has a streak but hasn't completed the day, still display the streak
 export function getCurrentStreak() {
   let sevensData = getListData("sevens", false);
   let eightsData = getListData("eights", false);
@@ -340,6 +368,9 @@ export function getCurrentStreak() {
   return 0;
 }
 
+// Statistics Helper
+// Returns user's best consecutive streak
+// TODO - make sure same as above
 export function getBestStreak() {
   let sevensData = getListData("sevens", false);
   let eightData = getListData("eights", false);
@@ -363,13 +394,17 @@ export function getBestStreak() {
   return 0;
 }
 
-// Reset ALL saved anagram data
+// Reset ALL saved anagram data and refresh page
+// Returns - nothing
+// TODO - make sure that this isn't available in production
 export function resetAllData() {
   saveData({});
   window.location.reload();
 }
 
 // Reset saved anagram data for a given list
+// Returns - nothing
+// TODO - change so that it only resets skipped words in archive
 export function resetDataForList(listName) {
   let newListData = {
     completed: [],

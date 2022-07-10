@@ -31,7 +31,13 @@ import AlphaDisplay from "./layout/AlphaDisplay";
 import HintButton from "./HintButton";
 import ConfirmModal from "./ConfirmModal";
 
-function GameContainer({ toggleToast, title, game, isArchive = false }) {
+function GameContainer({
+  toggleToast,
+  title,
+  game,
+  isArchive = false,
+  updateStats,
+}) {
   // Game state
   const [gameState, setGameState] = useState({
     answer: null,
@@ -122,6 +128,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
 
     updateGameState(newState);
     toggleToast(true, msg, type);
+    updateStats();
   }
 
   // Set the guess based on physical and virtual keyboard input
@@ -254,6 +261,7 @@ function GameContainer({ toggleToast, title, game, isArchive = false }) {
       userGuess: answer.word.split(""),
     });
     markWordSkipped(game, answer.index);
+    updateStats();
   }
 
   return (
