@@ -2,7 +2,7 @@ import StatTile from "./StatTile";
 import { affirmations } from "../../assets/affirmations";
 function InfoModal({ stats }) {
   if (stats == null) {
-    return <div>Loading...</div>;
+    return <></>;
   }
   return (
     <div
