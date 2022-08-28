@@ -1,35 +1,31 @@
 import StatTile from "./StatTile";
 import { affirmations } from "../../assets/affirmations";
 import { getDay } from "../../utils/wordUtils";
-function InfoModal({ stats }) {
+import Modal from 'react-bootstrap/Modal';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+function InfoModal({ stats, show, setShow }) {
   if (stats == null) {
     return <></>;
   }
   return (
-    <div
-      className='modal fade modal-centered'
+    <Modal
+      show={show} onHide={() => setShow(false)}
       id='infoModal'
-      tabIndex='-1'
       aria-labelledby='infoModal'
       aria-hidden='true'
+      centered
     >
-      <div className='modal-dialog modal-dialog-centered'>
-        <div className='modal-content jopert'>
-          <div className='modal-header'>
+        <Container className='jopert'>
+          <Modal.Header>
             <h5 className='modal-title' id='infoModalLabel'>
               YOUR STATS
             </h5>
-            <button
-              type='button'
-              className='btn-close'
-              data-bs-dismiss='modal'
-              aria-label='Close'
-            ></button>
-          </div>
+          </Modal.Header>
 
           {stats && (
-            <div className='modal-body'>
-              <div className='d-flex p-1 flex-column align-items-center'>
+            <Modal.Body className='modal-body'>
+              <Container className='d-flex p-1 flex-column align-items-center'>
                 <StatTile
                   key='streaks'
                   items={[
@@ -68,22 +64,21 @@ function InfoModal({ stats }) {
                     },
                   ]}
                 />
-              </div>
-            </div>
+              </Container>
+            </Modal.Body>
           )}
 
-          <div className='modal-footer'>
-            <button
+          <Modal.Footer>
+            <Button
               type='button'
-              className='btn btn-secondary'
-              data-bs-dismiss='modal'
+              className='btn-secondary'
+              onClick={() => setShow(false)}
             >
               CLOSE
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Button>
+          </Modal.Footer>
+        </Container>
+    </Modal>
   );
 }
 

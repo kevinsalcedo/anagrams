@@ -1,7 +1,8 @@
+import Button from 'react-bootstrap/Button';
 function HintButton({ revealHint, displayedHints, solved }) {
   if (displayedHints.length === 3) {
     return (
-      <button
+      <Button
         className='btn btn-danger me-1'
         style={{ width: "7.5rem " }}
         disabled={solved}
@@ -9,12 +10,12 @@ function HintButton({ revealHint, displayedHints, solved }) {
         data-bs-target='#confirmModal'
       >
         Give Up?
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
       className={`btn ${solved ? "btn-success" : "btn-secondary"} me-1 ${
         solved ? "bg-opacity-75" : ""
       }`}
@@ -66,7 +67,7 @@ function HintButton({ revealHint, displayedHints, solved }) {
       >
         <circle cx='8' cy='8' r='8' />
       </svg>
-    </button>
+    </Button>
   );
 }
 

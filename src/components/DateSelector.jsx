@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
 import DatePicker from "react-datepicker";
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
 import "react-datepicker/dist/react-datepicker.css";
 import {
   FIRST_DAY,
@@ -8,6 +10,7 @@ import {
   isValidIndex,
 } from "../utils/wordUtils";
 
+// TODO: Change buttons to Button component w/o losing style changes
 function DateSelector({ dateIndex, setDate }) {
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div role='button' onClick={onClick} ref={ref}>
@@ -16,7 +19,7 @@ function DateSelector({ dateIndex, setDate }) {
   ));
   const date = getDayByIndex(dateIndex);
   return (
-    <div
+    <Container
       className='btn-group my-2'
       role='group'
       aria-label='Date Selector'
@@ -75,7 +78,7 @@ function DateSelector({ dateIndex, setDate }) {
           />
         </svg>{" "}
       </button>
-    </div>
+    </Container>
   );
 }
 

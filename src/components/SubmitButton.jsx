@@ -3,6 +3,7 @@ import {
   getDayByIndex,
   isTodaysPairComplete,
 } from "../utils/wordUtils";
+import Button from 'react-bootstrap/Button';
 
 function SubmitButton({
   isArchive,
@@ -29,7 +30,7 @@ function SubmitButton({
   }
   // TODO: FIX THAT TERNARY LMAO
   return (
-    <button
+    <Button
       className={`ms-1 submit-button btn ${
         solved ? "bg-success bg-opacity-75" : "btn-secondary"
       }
@@ -49,7 +50,7 @@ function SubmitButton({
           ? "Eights"
           : "Sevens"
         : "Submit"}
-    </button>
+    </Button>
   );
 }
 

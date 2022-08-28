@@ -1,3 +1,4 @@
+// TODO: Something about the Button components?
 function GameTile({
   value,
   index,

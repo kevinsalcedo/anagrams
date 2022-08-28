@@ -31,9 +31,7 @@ import SubmitButton from "./SubmitButton";
 import AlphaDisplay from "./layout/AlphaDisplay";
 import HintButton from "./HintButton";
 import ConfirmModal from "./ConfirmModal";
-import $ from "jquery";
-import Popper from "popper.js";
-import "bootstrap/dist/js/bootstrap.bundle.min";
+import { Container, Row } from "react-bootstrap";
 function GameContainer({
   toggleToast,
   title,
@@ -41,6 +39,7 @@ function GameContainer({
   isArchive = false,
   updateStats,
   switchGame,
+  showModal
 }) {
   // Game state
   const [gameState, setGameState] = useState({
@@ -122,7 +121,7 @@ function GameContainer({
       } else {
         if (isTodaysPairComplete(game)) {
           // TODO: Show the info modal somehow
-          $("#infoModal").show();
+          showModal(true);
         }
       }
       type = "success";
@@ -275,12 +274,12 @@ function GameContainer({
 
   return (
     <>
-      <div
+      <Row
         id='contentRow'
-        className='row justify-content-center flex-grow-1 mb-2'
+        className='justify-content-center flex-grow-1 mb-2'
       >
         <PageTitle title={title} subtitle={game} />
-        <div id='tilesRow' className='row px-0 mb-auto justify-content-center'>
+        <Row id='tilesRow' className='px-0 mb-auto justify-content-center'>
           {isArchive && (
             <DateSelector dateIndex={dateIndex} setDate={handleDateChange} />
           )}
@@ -304,7 +303,7 @@ function GameContainer({
             className={skipped ? "bg-danger" : ""}
           />
 
-          <div className='container'>
+          <Container>
             <HintButton
               revealHint={revealHint}
               displayedHints={displayedHints}
@@ -320,9 +319,9 @@ function GameContainer({
               switchGame={switchGame}
               game={game}
             />
-          </div>
-        </div>
-      </div>
+          </Container>
+        </Row>
+      </Row>
       <ConfirmModal confirmAction={() => skipWord()} />
 
       <SoftKeyboard

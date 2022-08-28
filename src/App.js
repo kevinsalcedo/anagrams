@@ -4,7 +4,8 @@ import SettingsModal from "./components/SettingsModal";
 import ToastMessage from "./components/ToastMessage";
 import { getStats } from "./utils/wordUtils";
 import { useEffect, useState } from "react";
-import AnagramOfTheDay from "./pages/AnagramOfTheDay";
+import GameContainer from "./components/GameContainer";
+import Container from 'react-bootstrap/Container';
 // import IntroModal from "./components/IntroModal";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
@@ -19,6 +20,7 @@ function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastmsg] = useState("");
   const [toastType, setToastType] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [game, setGame] = useState("sevens");
 
@@ -54,15 +56,15 @@ function App() {
 
   return (
     <div className='h-100 d-flex flex-column text-center'>
-      <MainNav setGame={switchGame} />
+      <MainNav setGame={switchGame} setModalShow={setModalVisible} />
       <ToastMessage
         visible={toastVisible}
         setVisible={setToastVisible}
         msg={toastMsg}
         type={toastType}
       />
-      <main className='container mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
-        <AnagramOfTheDay
+      <Container className='mx-auto d-flex flex-column text-center justify-content-between flex-grow-1'>
+        <GameContainer
           game={game}
           toggleToast={toggleToast}
           title={
@@ -71,9 +73,11 @@ function App() {
           updateStats={updateStats}
           isArchive={game.includes("archived-")}
           switchGame={switchGame}
+          showModal={setModalVisible}
         />
-      </main>
-      <InfoModal stats={stats} />
+
+      </Container>
+      <InfoModal stats={stats} show={modalVisible} setShow={setModalVisible}/>
       <SettingsModal />
       {/* <IntroModal />
       <button

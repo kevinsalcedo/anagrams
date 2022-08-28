@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function MainNav({ setGame }) {
+function MainNav({ setGame, setModalShow }) {
   const [collapsed, setCollapsed] = useState(true);
 
   function toggleGame(game) {
@@ -128,8 +128,7 @@ function MainNav({ setGame }) {
             type='buton'
             tabIndex='-1'
             className='btn btn-secondary d-flex justify-content-center align-items-center me-2'
-            data-bs-toggle='modal'
-            data-bs-target='#infoModal'
+            onClick={() => setModalShow(true)}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'

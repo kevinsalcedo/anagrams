@@ -1,14 +1,16 @@
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 function StatTile({ items, padHeight = false }) {
   const tile = (title, value) => {
     return (
-      <div
+      <Col
       key={title + "_tile"}
-        className='d-flex flex-column col m-1 justify-content-center'
+        className='d-flex flex-column m-1 justify-content-center align-items-center'
         style={{ backgroundColor: "lightgray" }}
       >
         {title && <div>{title}</div>}
         {value && <div>{value}</div>}
-      </div>
+      </Col>
     );
   };
 
@@ -18,9 +20,9 @@ function StatTile({ items, padHeight = false }) {
   }
 
   return (
-    <div className='d-flex row w-100' style={styles}>
+    <Row className='d-flex row w-100' style={styles}>
       {items.length && items.map(({ title, value }) => tile(title, value))}
-    </div>
+    </Row>
   );
 }
 

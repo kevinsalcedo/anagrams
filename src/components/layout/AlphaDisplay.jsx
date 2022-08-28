@@ -1,4 +1,5 @@
 import GameTile from "./GameTile";
+import Row from 'react-bootstrap/Row';
 
 function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
   let hiddenIndexList = [];
@@ -22,7 +23,7 @@ function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
   }
 
   return (
-    <div className='row mx-0 my-2 px-0 justify-content-center'>
+    <Row className='mx-0 my-2 px-0 justify-content-center'>
       {alpha.split("").map((value, index) => {
         let styles = "";
         if (hiddenIndexList.includes(index)) {
@@ -40,7 +41,7 @@ function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
           />
         );
       })}
-    </div>
+    </Row>
   );
 }
 
