@@ -1,6 +1,13 @@
 import GameContainer from "../components/GameContainer";
 
-function AnagramOfTheDay({ toggleToast, title, game, isArchive, updateStats }) {
+function AnagramOfTheDay({
+  toggleToast,
+  title,
+  game,
+  isArchive,
+  updateStats,
+  switchGame,
+}) {
   return (
     <GameContainer
       toggleToast={toggleToast}
@@ -8,6 +15,7 @@ function AnagramOfTheDay({ toggleToast, title, game, isArchive, updateStats }) {
       game={game}
       isArchive={isArchive}
       updateStats={updateStats}
+      switchGame={switchGame}
     />
   );
 }

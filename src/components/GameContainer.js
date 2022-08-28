@@ -5,13 +5,14 @@ import {
   getWordByIndex,
   isWordCompleted,
   markWordCompleted,
-  getLatestIncompleteIndex,
+  getEarliestIncompleteIndex,
   isValidDate,
   isValidIndex,
   getDisplayedHintsForWord,
   saveHintsForWord,
   markWordSkipped,
   isWordSkipped,
+  isTodaysPairComplete,
 } from "../utils/wordUtils";
 import {
   GUESS_SUCCESS,
@@ -30,13 +31,16 @@ import SubmitButton from "./SubmitButton";
 import AlphaDisplay from "./layout/AlphaDisplay";
 import HintButton from "./HintButton";
 import ConfirmModal from "./ConfirmModal";
-
+import $ from "jquery";
+import Popper from "popper.js";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 function GameContainer({
   toggleToast,
   title,
   game,
   isArchive = false,
   updateStats,
+  switchGame,
 }) {
   // Game state
   const [gameState, setGameState] = useState({
@@ -67,7 +71,7 @@ function GameContainer({
     const newState = { ...stateObj };
     // Reinitialize game state on date change
     if (switchGame || newState.dateIndex !== gameState.dateIndex) {
-      let idx = getLatestIncompleteIndex(game);
+      let idx = getEarliestIncompleteIndex(game);
       if (switchGame) {
         newState.dateIndex = idx;
       } else {
@@ -115,6 +119,11 @@ function GameContainer({
       msg = GUESS_SUCCESS;
       if (isArchive) {
         msg = isValidIndex(dateIndex + 1) ? ARCHIVE_NEXT : ARCHIVE_END;
+      } else {
+        if (isTodaysPairComplete(game)) {
+          // TODO: Show the info modal somehow
+          $("#infoModal").show();
+        }
       }
       type = "success";
     }
@@ -308,6 +317,8 @@ function GameContainer({
               dateIndex={dateIndex}
               handleDateChange={handleDateChange}
               handleSubmit={handleSubmit}
+              switchGame={switchGame}
+              game={game}
             />
           </div>
         </div>

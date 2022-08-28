@@ -1,10 +1,10 @@
 export const INTRO_HEADER = "Welcome to Anagram of the Day!";
 
 export const INTRO_INSTRUCTIONS =
-  "The objective is to guess the word based off the given alphagram - the word's letters in alphabetical order. Type or tap the provided letters and guess the word! Don't worry, there's only one answer.";
+  "Guess the word from the given letters. Don't worry, there's only one answer!";
 
 export const INTRO_INSTRUCTIONS_EIGHT =
-  "The objective is to guess the word based off the given alphagram - the word's letters in alphabetical order. One letter is already in the correct position. Type or tap the provided letters and guess the word! Don't worry, there's only one answer.";
+  "Guess the word from the given letters. One letter is already in the correct position. Don't worry, there's only one answer.";
 
 export const INTRO_EASY_MODE =
   "Having trouble? Enable Hints in the game settings to make things easier!";

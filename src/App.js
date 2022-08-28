@@ -5,6 +5,7 @@ import ToastMessage from "./components/ToastMessage";
 import { getStats } from "./utils/wordUtils";
 import { useEffect, useState } from "react";
 import AnagramOfTheDay from "./pages/AnagramOfTheDay";
+// import IntroModal from "./components/IntroModal";
 // import { SettingsContextProvider } from "./components/SettingsContext";
 
 function App() {
@@ -69,11 +70,19 @@ function App() {
           }
           updateStats={updateStats}
           isArchive={game.includes("archived-")}
+          switchGame={switchGame}
         />
       </main>
-      <InfoModal />
-      <SettingsModal />
       <InfoModal stats={stats} />
+      <SettingsModal />
+      {/* <IntroModal />
+      <button
+        type='button'
+        tabIndex='-1'
+        className='btn btn-secondary d-flex justify-content-center align-items-center'
+        data-bs-toggle='modal'
+        data-bs-target='#introModal'
+      ></button> */}
     </div>
   );
 }

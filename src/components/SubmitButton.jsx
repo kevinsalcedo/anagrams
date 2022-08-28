@@ -1,4 +1,8 @@
-import { isValidIndex, getDayByIndex } from "../utils/wordUtils";
+import {
+  isValidIndex,
+  getDayByIndex,
+  isTodaysPairComplete,
+} from "../utils/wordUtils";
 
 function SubmitButton({
   isArchive,
@@ -7,14 +11,23 @@ function SubmitButton({
   dateIndex,
   handleDateChange,
   handleSubmit,
+  switchGame,
+  game,
 }) {
   function handleClick() {
     if (solved || skipped) {
-      handleDateChange(getDayByIndex(dateIndex + 1));
+      if (isArchive) {
+        handleDateChange(getDayByIndex(dateIndex + 1));
+      } else {
+        if (!isTodaysPairComplete(game)) {
+          switchGame(game === "sevens" ? "eights" : "sevens");
+        }
+      }
     } else {
       handleSubmit();
     }
   }
+  // TODO: FIX THAT TERNARY LMAO
   return (
     <button
       className={`ms-1 submit-button btn ${
@@ -24,11 +37,18 @@ function SubmitButton({
       onClick={() => handleClick()}
       style={{ width: "5rem" }}
       disabled={
-        ((solved || skipped) && !isArchive) || !isValidIndex(dateIndex + 1)
+        ((solved || skipped) && !isArchive && isTodaysPairComplete(game)) ||
+        !isValidIndex(dateIndex + 1)
       }
       tabIndex='-1'
     >
-      {isArchive && solved ? "Next" : "Submit"}
+      {solved
+        ? isArchive
+          ? "Next"
+          : game === "sevens"
+          ? "Eights"
+          : "Sevens"
+        : "Submit"}
     </button>
   );
 }

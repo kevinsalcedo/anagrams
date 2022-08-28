@@ -32,8 +32,18 @@ export function isValidDate(date) {
   return isValidIndex(getDayDiff(date));
 }
 
+// Returns - true if both sevens and eights are complete, false otherwise
+// TODO: Change this when 9s is in the game
+export function isTodaysPairComplete(currentGame) {
+  let otherGame = currentGame === "sevens" ? "eights" : "sevens";
+  let otherData = getListData(otherGame);
+  let completed = otherData.completed ? otherData.completed : [];
+
+  return completed.includes(getDay());
+}
+
 // Returns - the first incomplete day for the archive
-export function getLatestIncompleteIndex(listName) {
+export function getEarliestIncompleteIndex(listName) {
   let idx = 0;
   let archivedCompleted = getListData(listName, false);
 
@@ -85,8 +95,7 @@ export function getSavedData() {
 
 // Get list data object for app
 // Returns - JSON object of list data
-export function getListData(listName, returnWords) {
-  const words = getWordList(listName);
+export function getListData(listName) {
   let data = getSavedData();
 
   let listData = data[listName];
@@ -102,16 +111,8 @@ export function getListData(listName, returnWords) {
     saveData(data);
   }
 
-  // Get actual words from saved indices
-  let completedWords = [];
-  if (returnWords && listData.completed) {
-    for (let i = 0; i < listData.completed.length; i++) {
-      completedWords.push(words[listData.completed[i]]);
-    }
-  }
-  // Return list of actual completed words, and number of attempts
   return {
-    completed: returnWords ? completedWords : listData.completed,
+    completed: listData.completed,
     hints: listData.hints,
     skipped: listData.skipped,
   };
@@ -121,7 +122,7 @@ export function getListData(listName, returnWords) {
 // Returns - JSON object containing word and index in list
 export function getWord(listName, useArchive) {
   let list = getWordList(listName);
-  let idx = useArchive ? getLatestIncompleteIndex() : getDay();
+  let idx = useArchive ? getEarliestIncompleteIndex() : getDay();
 
   // Eights handling since they are more complex
   if (listName.includes("eights")) {
@@ -343,7 +344,7 @@ function getHintStats(hints, returnAvg) {
 
 // Statistics Helper
 // Returns - The number of consecutive days a user has completed
-// TODO - if a user has a streak but hasn't completed the day, still display the streak
+// TODO - clean up the logic here
 export function getCurrentStreak() {
   let sevensData = getListData("sevens", false);
   let eightsData = getListData("eights", false);
@@ -354,14 +355,29 @@ export function getCurrentStreak() {
     eightsData &&
     eightsData.completed
   ) {
+    // Get streak up until today
+    // So we still show a streak if today is not complete
     let streak = 0;
-    let day = getDay();
+    let day = getDay() - 1;
     let sevensComp = sevensData.completed;
     let eightsComp = eightsData.completed;
     while (sevensComp.includes(day) && eightsComp.includes(day)) {
       streak++;
       day--;
     }
+    // Increment if player has done today's puzzle
+    if (sevensComp.includes(getDay()) && eightsComp.includes(getDay())) {
+      streak++;
+    }
+    // TODO - something about this
+    // // Reset streak if player skips today
+    // if (
+    //   sevensData.skipped.includes(getDay()) ||
+    //   eightsData.skipped.includes(getDay())
+    // ) {
+    //   console.log("hi");
+    //   streak = 0;
+    // }
     return streak;
   }
 
@@ -370,7 +386,6 @@ export function getCurrentStreak() {
 
 // Statistics Helper
 // Returns user's best consecutive streak
-// TODO - make sure same as above
 export function getBestStreak() {
   let sevensData = getListData("sevens", false);
   let eightData = getListData("eights", false);

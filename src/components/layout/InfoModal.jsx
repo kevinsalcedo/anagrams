@@ -1,5 +1,6 @@
 import StatTile from "./StatTile";
 import { affirmations } from "../../assets/affirmations";
+import { getDay } from "../../utils/wordUtils";
 function InfoModal({ stats }) {
   if (stats == null) {
     return <></>;
@@ -62,7 +63,7 @@ function InfoModal({ stats }) {
                     {
                       title:
                         affirmations[
-                          Math.floor(Math.random() * affirmations.length)
+                          getDay() % affirmations.length
                         ].toUpperCase(),
                     },
                   ]}
