@@ -1,6 +1,7 @@
 import { resetAllData, resetDataForList } from "../utils/wordUtils";
+import ToggleButton from 'react-bootstrap/ToggleButton';
 
-function SettingsModal() {
+function SettingsModal({ninesEnabled, setNinesEnabled}) {
   return (
     <div
       className='modal fade'
@@ -24,6 +25,10 @@ function SettingsModal() {
           </div>
           <div className='modal-body'>
             <div className='container d-flex mx-auto  flex-column w-50'>
+              <button className={`btn btn-${ninesEnabled ? "" : "outline-"}primary`} onClick={() => setNinesEnabled(!ninesEnabled)}>
+                {ninesEnabled ? "9s Enabled" : "9s Disabled"}
+              </button>
+              <br/>
               <button
                 className='btn bg-danger text-white dropdown-toggle'
                 data-bs-toggle='dropdown'

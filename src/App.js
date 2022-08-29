@@ -21,6 +21,7 @@ function App() {
   const [toastMsg, setToastmsg] = useState("");
   const [toastType, setToastType] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [ninesEnabled, setNinesEnabled] = useState(false);
 
   const [game, setGame] = useState("sevens");
 
@@ -43,6 +44,13 @@ function App() {
     toggleToast(false);
   }
 
+  function toggleNines(enabled) {
+    setNinesEnabled(enabled);
+    if(!enabled) {
+      switchGame("sevens");
+    }
+  }
+
   // Let the ToastMessage comoponent know if it should render
   function toggleToast(show, msg, type) {
     // Hide the toast - for when same message is set consecutively
@@ -56,7 +64,7 @@ function App() {
 
   return (
     <div className='h-100 d-flex flex-column text-center'>
-      <MainNav setGame={switchGame} setModalShow={setModalVisible} />
+      <MainNav setGame={switchGame} setModalShow={setModalVisible} ninesEnabled={ninesEnabled}/>
       <ToastMessage
         visible={toastVisible}
         setVisible={setToastVisible}
@@ -78,7 +86,7 @@ function App() {
 
       </Container>
       <InfoModal stats={stats} show={modalVisible} setShow={setModalVisible}/>
-      <SettingsModal />
+      <SettingsModal ninesEnabled={ninesEnabled} setNinesEnabled={toggleNines}/>
       {/* <IntroModal />
       <button
         type='button'

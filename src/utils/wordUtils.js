@@ -383,7 +383,6 @@ export function getCurrentStreak() {
     //   sevensData.skipped.includes(getDay()) ||
     //   eightsData.skipped.includes(getDay())
     // ) {
-    //   console.log("hi");
     //   streak = 0;
     // }
     return streak;

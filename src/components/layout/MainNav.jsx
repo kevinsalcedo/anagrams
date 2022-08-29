@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function MainNav({ setGame, setModalShow }) {
+function MainNav({ setGame, setModalShow, ninesEnabled }) {
   const [collapsed, setCollapsed] = useState(true);
 
   function toggleGame(game) {
@@ -58,7 +58,7 @@ function MainNav({ setGame, setModalShow }) {
                   Eights
                 </button>
               </li>
-              <li className='nav-item'>
+              {ninesEnabled && <li className='nav-item'>
                 <button
                   tabIndex='-1'
                   className='btn nav-link'
@@ -67,7 +67,7 @@ function MainNav({ setGame, setModalShow }) {
                 >
                   Nines
                 </button>
-              </li>
+              </li>}
               <li className='nav-item dropdown'>
                 <button
                   tabIndex='-1'
@@ -98,7 +98,7 @@ function MainNav({ setGame, setModalShow }) {
                       Eights
                     </button>
                   </li>
-                  {/* <li>
+                 {ninesEnabled && <li>
                     <button
                       tabIndex='-1'
                       className='dropdown-item btn nav-link'
@@ -107,7 +107,7 @@ function MainNav({ setGame, setModalShow }) {
                     >
                       Nines
                     </button>
-                  </li> */}
+                  </li>}
                 </ul>
               </li>
             </ul>
