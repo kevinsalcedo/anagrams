@@ -18,6 +18,7 @@ function DateSelector({ dateIndex, setDate }) {
     </div>
   ));
   const date = getDayByIndex(dateIndex);
+  
   return (
     <Container
       className='btn-group my-2'
@@ -54,6 +55,7 @@ function DateSelector({ dateIndex, setDate }) {
           maxDate={getDayByIndex(getDay() - 1)}
           dateFormat='MM/dd/yyyy'
           customInput={<ExampleCustomInput />}
+          showWeekNumbers
         />
       </div>
 

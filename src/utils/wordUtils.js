@@ -6,7 +6,7 @@ import moment from "moment";
 // TODO: Set to be the launch day
 export const FIRST_DAY = moment([2022, 0, 1]);
 
-// Returns - the current day's index (current day - launch day)
+// Returns - the current day's index (current day MINUS launch day)
 export function getDay() {
   let today = moment();
   return today.diff(FIRST_DAY, "days");
@@ -17,7 +17,7 @@ export function getDayDiff(date) {
   return moment(date).diff(FIRST_DAY, "days");
 }
 
-// Returns - the date from a given index (launch day + index # of days)
+// Returns - the date from a given index (launch day PLUS index # of days)
 export function getDayByIndex(index) {
   return moment(FIRST_DAY).add(index, "days").toDate();
 }
@@ -123,6 +123,11 @@ export function getListData(listName) {
 export function getWord(listName, useArchive) {
   let list = getWordList(listName);
   let idx = useArchive ? getEarliestIncompleteIndex() : getDay();
+
+  if(listName.includes("nines")) {
+    idx = Math.floor(idx / 7);
+    
+  }
 
   let info = {
     index: idx,
