@@ -74,6 +74,10 @@ body,
 }
 
 @media (max-width: 600px) {
+  .letter-tile-small {
+    width: 2.5rem;
+    height: 3.125rem;
+  }
   .simple-keyboard {
     max-width: 100%;
   }

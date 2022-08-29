@@ -204,11 +204,13 @@ function GameContainer({
     let theWord = word ? word : answer;
     let splitWord = theWord.word.split("");
     let guessArray = Array(theWord.word.length).fill("");
-
-    // Fill 8s given letter
-    if (theWord.letterIndex && theWord.letter) {
-      guessArray[theWord.letterIndex] = theWord.letter;
+    // Fill 8s or 9s given letter(s)
+    if (theWord.letterIndices && theWord.letters) {
+      for(let givenIdx = 0; givenIdx < theWord.letterIndices.length; givenIdx++) {
+        guessArray[theWord.letterIndices[givenIdx]] = theWord.letters[givenIdx];
+      }
     }
+    // Do something about the wildcard here - do we need to?
 
     // Fill displayed hints
     let theHints = hints ? hints : displayedHints;
@@ -231,10 +233,19 @@ function GameContainer({
 
   // Return true if index matches the given letter or displayed hints
   function isHintIndex(idx) {
-    return (
-      displayedHints.includes(idx) ||
-      (answer.letterIndex >= 0 && answer.letterIndex === idx)
-    );
+    let isHint = displayedHints.includes(idx);
+
+    if(game.includes("sevens")) {
+      return isHint;
+    }
+
+    for(let given = 0; given < answer.letterIndices.length; given++) {
+      if(answer.letterIndices[given] >= 0 && answer.letterIndices[given] === idx) {
+        isHint = true;
+      }
+    }
+    return isHint;
+
   }
 
   // Setter for the datepicker
@@ -291,16 +302,18 @@ function GameContainer({
             }
             handleTap={handleInput}
             userGuess={userGuess}
-            fillIndex={game.includes("eight") ? answer.letterIndex : null}
+            fillIndices={game.includes("eight") || game.includes("nines") ? answer.letterIndices : null}
+            game={game}
           />
           <TileInput
             solved={solved || skipped}
-            fillLetter={game.includes("eight") ? answer.letter : null}
-            fillIndex={game.includes("eight") ? answer.letterIndex : null}
+            fillLetters={game.includes("eight") || game.includes("nines") ? answer.letters : null}
+            fillIndices={game.includes("eight") || game.includes("nines") ? answer.letterIndices : null}
             hints={displayedHints}
             answer={answer.word}
             userGuess={userGuess}
             className={skipped ? "bg-danger" : ""}
+            game={game}
           />
 
           <Container>

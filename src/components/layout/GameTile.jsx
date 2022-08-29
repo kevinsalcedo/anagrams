@@ -8,6 +8,7 @@ function GameTile({
   immutable,
   className,
   disabled = false,
+  game
 }) {
   let styles = "";
   if (value !== " " && !solved) {
@@ -22,6 +23,9 @@ function GameTile({
   }
   if (readOnly) {
     styles += " letter-tile-display";
+  }
+  if(game.includes("nines")) {
+    styles += " letter-tile-small";
   }
 
   return (

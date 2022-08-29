@@ -1,7 +1,7 @@
 import GameTile from "./GameTile";
 import Row from 'react-bootstrap/Row';
 
-function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
+function AlphaDisplay({ alpha, handleTap, userGuess, fillIndices, game}) {
   let hiddenIndexList = [];
   let alphaCopy = alpha;
 
@@ -9,17 +9,25 @@ function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
   for (let i = 0; i < userGuess.length; i++) {
     let idx = alphaCopy.indexOf(userGuess[i]);
     // Ignore the given letter if provided
-    if (idx >= 0 && userGuess[i] !== "") {
-      // If fillIndex is provided (8s puzzle), check to make sure we're not filling it in
-      if (fillIndex !== null && i === fillIndex) {
+    if (userGuess[i] !== "") {
+      // If fillIndices are provided (8s or 9s puzzle), check to make sure we're not filling it in
+      if (fillIndices && fillIndices.includes(i)) {
         continue;
+      }
+      // If a wildcard is present, typing a letter NOT in the alphagram will fill in the ? tile
+      if(idx < 0) {
+        if(alphaCopy.includes("?")) {
+          idx = alphaCopy.indexOf("?");
+        } else {
+          continue;
+        }
       }
       hiddenIndexList.push(idx);
       // Replace the position in the alphagram with * so we can preserve index order
       let s = alphaCopy.split("");
       s[idx] = "*";
       alphaCopy = s.join("");
-    }
+    } 
   }
 
   return (
@@ -38,6 +46,7 @@ function AlphaDisplay({ alpha, handleTap, userGuess, fillIndex }) {
             handleTap={handleTap}
             readOnly
             disabled={hiddenIndexList.includes(index)}
+            game={game}
           />
         );
       })}

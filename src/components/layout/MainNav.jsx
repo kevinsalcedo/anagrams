@@ -58,7 +58,7 @@ function MainNav({ setGame, setModalShow }) {
                   Eights
                 </button>
               </li>
-              {/* <li className='nav-item'>
+              <li className='nav-item'>
                 <button
                   tabIndex='-1'
                   className='btn nav-link'
@@ -67,7 +67,7 @@ function MainNav({ setGame, setModalShow }) {
                 >
                   Nines
                 </button>
-              </li> */}
+              </li>
               <li className='nav-item dropdown'>
                 <button
                   tabIndex='-1'

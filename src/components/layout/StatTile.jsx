@@ -8,8 +8,8 @@ function StatTile({ items, padHeight = false }) {
         className='d-flex flex-column m-1 justify-content-center align-items-center'
         style={{ backgroundColor: "lightgray" }}
       >
-        {title && <div>{title}</div>}
-        {value && <div>{value}</div>}
+        {title && <Row>{title}</Row>}
+        {value && <Row>{value}</Row>}
       </Col>
     );
   };

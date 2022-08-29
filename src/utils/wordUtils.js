@@ -124,25 +124,33 @@ export function getWord(listName, useArchive) {
   let list = getWordList(listName);
   let idx = useArchive ? getEarliestIncompleteIndex() : getDay();
 
-  // Eights handling since they are more complex
-  if (listName.includes("eights")) {
-    return {
-      index: idx,
-      word: list[idx].WORD,
-      alpha: list[idx].ALPHA,
-      letter: list[idx].LETTER,
-      letterIndex: list[idx].INDEX,
-      hints: list[idx].HINTS,
-    };
-  }
-
-  // Return object with index + word so that it can be marked complete
-  return {
+  let info = {
     index: idx,
     word: list[idx].WORD,
     alpha: list[idx].ALPHA,
     hints: list[idx].HINTS,
   };
+
+  // Eights handling since they are more complex
+  if (listName.includes("eights") || listName.includes("nine")) {
+
+    // Include given letterse and their indices
+    info = {
+      ...info,
+      letters: list[idx].LETTERS,
+      letterIndices: list[idx].INDICES,
+    };
+
+    // For 9s, include the wildcard [IS THIS NEEDED? DO WE NEED A WILDCARD INFO?]
+    if(listName.includes("nines")) {
+      info = {...info, wildcard: list[idx].WILDCARD, wildcardIndex: list[idx].WILDCARD_INDEX};
+    }
+
+    return info;
+  } 
+
+  // Return object with index + word so that it can be marked complete
+  return info;
 }
 
 // For archived retrieval of past words
@@ -155,13 +163,13 @@ export function getWordByIndex(listName, index) {
   let list = getWordList(listName);
 
   // Eights handling since they are more complex
-  if (listName.includes("eights")) {
+  if (listName.includes("eights") || listName.includes("nine")) {
     return {
       index: index,
       word: list[index].WORD,
       alpha: list[index].ALPHA,
-      letter: list[index].LETTER,
-      letterIndex: list[index].INDEX,
+      letters: list[index].LETTERS,
+      letterIndices: list[index].INDICES,
       hints: list[index].HINTS,
     };
   }
